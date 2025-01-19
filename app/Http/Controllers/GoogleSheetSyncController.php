@@ -82,7 +82,14 @@ class GoogleSheetSyncController extends Controller
             $googleSheets = new GoogleSheetHelper();
         
             $spreadsheetTitle = "Robist Spreadsheet";
-            $spreadsheetId = $googleSheets->createSpreadsheet($spreadsheetTitle);
+            $data = [
+                ["Name", "Age", "City"],
+                ["Alice", "30", "New York"],
+                ["Bob", "25", "Los Angeles"],
+                ["Charlie", "35", "Chicago"]
+            ];
+            $spreadsheetId = $googleSheets->createSpreadsheet($spreadsheetTitle, $data, 'sheetexample');
+            dd('here');
             $googleSheets->setSpreadsheetId($spreadsheetId);
         
             if ($spreadsheetId) {

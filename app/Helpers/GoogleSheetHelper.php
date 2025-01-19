@@ -7,6 +7,7 @@ use Google\Client;
 use Google\Service\Sheets;
 use Illuminate\Support\Facades\Redis;
 use GuzzleHttp\Client as GuzzleClient;
+use Google\Service\Sheets\ValueRange;
 
 class GoogleSheetHelper
 {
@@ -140,11 +141,11 @@ class GoogleSheetHelper
         }
     }
 
-    public function createSpreadsheet($title, $data = null)
+    public function createSpreadsheet($title, $data = null, $sheetName = 'Sheet1')
     {
         try {
             $this->initializeService();
-            $spreadsheet = new Sheets\Spreadsheet([
+            $spreadsheet = new \Google\Service\Sheets\Spreadsheet([
                 'properties' => ['title' => $title]
             ]);
 
@@ -153,8 +154,12 @@ class GoogleSheetHelper
 
             echo "Created new spreadsheet with ID: $spreadsheetId\n";
 
+            if (!$this->sheetExists($spreadsheetId, $sheetName)) {
+                $this->createSheet($spreadsheetId, $sheetName);
+            }
+
             if ($data) {
-                $this->appendRowToSheet($spreadsheetId, $title, $data);
+                $this->appendRowToSheet($spreadsheetId, $sheetName, $data);
             }
 
             return $spreadsheetId;
@@ -164,7 +169,54 @@ class GoogleSheetHelper
         }
     }
 
-    public function createSheet($sheetName, $spreadsheetId = null)
+    private function sheetExists($spreadsheetId, $sheetName)
+    {
+        try {
+            $this->initializeService();
+
+            // Get the spreadsheet's metadata
+            $spreadsheet = $this->service->spreadsheets->get($spreadsheetId);
+
+            // Check if any sheet matches the given name
+            foreach ($spreadsheet->getSheets() as $sheet) {
+                if ($sheet->getProperties()->getTitle() === $sheetName) {
+                    return true;
+                }
+            }
+
+            return false;
+        } catch (Exception $e) {
+            echo 'An error occurred while checking if the sheet exists: ' . $e->getMessage() . "\n";
+            return false;
+        }
+    }
+
+    public function appendRowToSheet(string $spreadsheetId, string $sheetName, array $data): void
+    {
+        try {
+            $this->initializeService();
+
+            // Define the range to append data to (e.g., sheet name and starting column)
+            $range = $sheetName; // By default, appending to the sheet's end
+            $valueRange = new ValueRange([
+                'values' => $data
+            ]);
+            $response = $this->service->spreadsheets_values->append(
+                $spreadsheetId,
+                $range,
+                $valueRange,
+                ['valueInputOption' => 'RAW']
+            );
+            
+            echo "Data appended successfully to sheet '$sheetName' in spreadsheet ID '$spreadsheetId'.\n";
+
+        } catch (Exception $e) {
+            echo 'An error occurred while appending rows: ' . $e->getMessage() . "\n";
+        }
+    }
+
+
+    public function createSheet($spreadsheetId, $sheetName)
     {
         try {
             $this->initializeService();
