@@ -132,4 +132,113 @@ class GoogleSheetSyncController extends Controller
     }
 
 
+
+
+
+    public function googleOuathCheck() {
+
+    }
+    
+    public function createSpreadsheet(Request $request)
+    {
+        try {
+            $title = $request->input('title');
+            $data = $request->input('data', null);
+            
+            $tokenData = Redis::get($this->redisKey);
+            if (!$tokenData) {
+                return response()->json([
+                    'error' => 'authenticate with sheet/ url in web.'
+                ], 403);
+            }
+
+            $googleSheets = new GoogleSheetHelper();
+            $spreadsheetId = $googleSheets->createSpreadsheet($title, $data);
+
+            return response()->json([
+                'message' => 'Spreadsheet created successfully',
+                'spreadsheetId' => $spreadsheetId
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function createSheet(Request $request)
+    {
+        try {
+            $sheetName = $request->input('sheetName');
+            $googleSheets = new GoogleSheetHelper();
+            
+            $googleSheets->createSheet($sheetName);
+
+            return response()->json([
+                'message' => "Sheet '$sheetName' created successfully."
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function insertData(Request $request)
+    {
+        try {
+            $sheetName = $request->input('sheetName');
+            $data = $request->input('data');
+            
+            $googleSheets = new GoogleSheetHelper();
+            $googleSheets->insertData($sheetName, $data);
+
+            return response()->json([
+                'message' => "Data inserted successfully into sheet '$sheetName'."
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function readSheet(Request $request)
+    {
+        try {
+            $sheetName = $request->input('sheetName');
+            
+            $googleSheets = new GoogleSheetHelper();
+            $data = $googleSheets->readSheet($sheetName);
+
+            return response()->json([
+                'message' => "Data fetched successfully from '$sheetName'.",
+                'data' => $data
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function appendRow(Request $request)
+    {
+        try {
+            $sheetName = $request->input('sheetName');
+            $rowData = $request->input('rowData');
+            
+            $googleSheets = new GoogleSheetHelper();
+            $googleSheets->appendRow($rowData, $sheetName);
+
+            return response()->json([
+                'message' => "Row appended successfully to sheet '$sheetName'."
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
