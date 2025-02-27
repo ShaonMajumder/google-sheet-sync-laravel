@@ -20,7 +20,8 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 ## Prerequisites
 
 1. **Google Cloud Project**:
-
+   
+   - **OAuth Access**: Authenticate users via OAuth to interact with Google Sheets.
    - Create a project in the Google Cloud Console.
    - Enable the **Google Sheets API** and **Google Drive API**.
    - Create OAuth 2.0 credentials and download the `credentials.json` file.
@@ -153,6 +154,58 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    $newRow = ['Bob', '25', 'Los Angeles'];
    $googleSheetHelper->appendRow($newRow, 'Sample Sheet');
    ```
+
+   ## Development Samples
+   ```json
+   $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
+                // Example : $accessToken
+                // array:6 [▼
+                //     "access_token" => "ya29.a0ARW5m74hIjmOX3v6xxtK_u6HTDEeqCreYEzF-yAmeXItvTa1F3-n3KCcGF1seh9kru9eGE3-GL3JDe4gd2Ns8F2hUOYiEjCN4cauvBsjTX9grYeVxgpJNKLL8LCh9j1Z6B5kg6zdxDs-XgRv5gAfTOcAg ▶"
+                //     "expires_in" => 3599
+                //     "refresh_token" => "1//0gnUMZXXKgU-KCgYIARAAGBASNwF-L9Irq-ZsM5gXDlXf2SbCvP_-6uqNebKkIeTmxIQzmO0C3MHyM3rIQuSPlS1oXNPp2mh_QJY"
+                //     "scope" => "https://www.googleapis.com/auth/spreadsheets"
+                //     "token_type" => "Bearer"
+                //     "created" => 1737240385
+                // ]
+   ```
+
+   ## Troubleshooting
+
+   ### 1. **Redis Issues**
+
+   If you encounter issues with Redis, follow these steps:
+
+   - Install `php-redis`:
+
+      ```bash
+      sudo apt-get install php-redis
+      ```
+
+   - Ensure Redis is running and accessible by the application.
+
+   ### 2. **Docker and Redis Connection**
+
+   If you're using Docker, you may need to update the `REDIS_HOST` to the IP address of your Docker container. Follow these steps:
+
+   1. Check the Docker network:
+
+      ```bash
+      ip addr show docker0
+      ```
+
+      Look for the IP address under `inet`, typically something like `172.17.0.1`.
+
+   2. Update the `.env` file with the Docker IP:
+
+      ```env
+      REDIS_HOST=172.17.0.1
+      ```
+
+   ### 3. **OAuth Issues**
+
+   - Ensure that the `credentials.json` file is properly configured and has the correct permissions.
+   - Double-check the redirect URI in both the Google Cloud Console and your `.env` file.
+   - If you get an expired token, the application will automatically refresh it as long as the refresh token is available.
 
    ## Common Issues
 

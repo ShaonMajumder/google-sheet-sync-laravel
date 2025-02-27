@@ -20,7 +20,7 @@ class GoogleSheetHelper
     public function __construct($initializeClient = true)
     {
         // $this->spreadsheetId = env('SPREADSHEET_ID');
-        $this->redisKey = 'google_sheet_access_token';
+        $this->redisKey = CacheHelper::getCacheKey('google_sheet_access_token');
         $this->credentialFile = env('CREDENTIALS_FILE');
         // $this->service = new Sheets($this->client);
         if ($initializeClient) {
