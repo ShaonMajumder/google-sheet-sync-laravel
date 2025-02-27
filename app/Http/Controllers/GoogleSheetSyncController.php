@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CacheHelper;
 use App\Helpers\GoogleSheetHelper;
 use Illuminate\Http\Request;
 use Exception;
@@ -11,9 +12,11 @@ use Illuminate\Support\Facades\Redis;
 
 class GoogleSheetSyncController extends Controller
 {
+    private $redisKey;
+    
     public function __construct()
     {
-
+        $this->redisKey = CacheHelper::getCacheKey('google_sheet_access_token');
     }
 
     public function oauthCallback(Request $request)
@@ -46,9 +49,8 @@ class GoogleSheetSyncController extends Controller
                 }
 
                 $redisTTL = $accessToken['expires_in'];
-                $redisKey = 'google_sheet_access_token';
                 $redisValue = json_encode($client->getAccessToken());
-                Redis::setex($redisKey, $redisTTL, $redisValue);
+                Redis::setex($this->redisKey, $redisTTL, $redisValue);
 
                 $host = $_SERVER['HTTP_HOST'];
                 $redirectUrl = 'http://' . $host . '/sheet';
@@ -69,7 +71,7 @@ class GoogleSheetSyncController extends Controller
     }
 
     public function getCachedGoogleSheetKey(){
-        return json_decode(Redis::get('google_sheet_access_token'), true);
+        return json_decode(Redis::get($this->redisKey), true);
     }
 
     public function revokeAccessToken(){
