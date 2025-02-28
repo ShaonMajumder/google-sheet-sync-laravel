@@ -19,11 +19,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-Route::prefix('google-sheets')->group(function () {
+Route::prefix('google-sheets')->name('google-sheets.')->group(function () {
     Route::post('create-spreadsheet', [GoogleSheetSyncController::class, 'createSpreadsheet']);
     Route::post('create-sheet', [GoogleSheetSyncController::class, 'createSheet']);
     Route::post('insert-data', [GoogleSheetSyncController::class, 'insertData']);
     Route::get('read-sheet', [GoogleSheetSyncController::class, 'readSheet']);
     Route::post('append-row', [GoogleSheetSyncController::class, 'appendRow']);
+    Route::get('/revoke', [GoogleSheetSyncController::class, 'revokeAccessToken'])->name('revoke.access');
 });

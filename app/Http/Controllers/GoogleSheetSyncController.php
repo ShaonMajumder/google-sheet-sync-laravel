@@ -33,15 +33,6 @@ class GoogleSheetSyncController extends Controller
                 
                 // Exchange the authorization code for an access token
                 $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
-                // Example : $accessToken
-                // array:6 [▼
-                //     "access_token" => "ya29.a0ARW5m74hIjmOX3v6xxtK_u6HTDEeqCreYEzF-yAmeXItvTa1F3-n3KCcGF1seh9kru9eGE3-GL3JDe4gd2Ns8F2hUOYiEjCN4cauvBsjTX9grYeVxgpJNKLL8LCh9j1Z6B5kg6zdxDs-XgRv5gAfTOcAg ▶"
-                //     "expires_in" => 3599
-                //     "refresh_token" => "1//0gnUMZXXKgU-KCgYIARAAGBASNwF-L9Irq-ZsM5gXDlXf2SbCvP_-6uqNebKkIeTmxIQzmO0C3MHyM3rIQuSPlS1oXNPp2mh_QJY"
-                //     "scope" => "https://www.googleapis.com/auth/spreadsheets"
-                //     "token_type" => "Bearer"
-                //     "created" => 1737240385
-                // ]
                 $client->setAccessToken($accessToken);
 
                 if (array_key_exists('error', $accessToken)) {
@@ -52,19 +43,18 @@ class GoogleSheetSyncController extends Controller
                 $redisValue = json_encode($client->getAccessToken());
                 Redis::setex($this->redisKey, $redisTTL, $redisValue);
 
-                $host = $_SERVER['HTTP_HOST'];
-                $redirectUrl = 'http://' . $host . '/sheet';
-                return view('oauth-success', [
+                $bladeVars = [
                     'message' => 'Authorization successful, token saved',
-                    'redirectUrl' => $redirectUrl,
+                    'redirectUrl' => route('home'),
                     'success' => true
-                ]);
+                ];
             } catch (Exception $e) {
-                return view('oauth-success', [
+                $bladeVars = [
                     'message' => 'Failed to get access token: ' . $e->getMessage(),
                     'success' => false
-                ]);
+                ];
             }
+            return view('oauth.oauth-success', $bladeVars);
         }
 
         return response()->json(['error' => 'Authorization code missing'], 400);
@@ -74,9 +64,18 @@ class GoogleSheetSyncController extends Controller
         return json_decode(Redis::get($this->redisKey), true);
     }
 
+    public function revoke(){
+        return view('oauth.revoke');
+    }
+
     public function revokeAccessToken(){
         $googleSheets = new GoogleSheetHelper(false);
         return $googleSheets->revokeAccessToken();
+    }
+
+    public function home(){
+        $tokenData = Redis::get($this->redisKey);
+        return view('oauth.home',compact('tokenData'));
     }
     
     public function sync(){
@@ -141,6 +140,8 @@ class GoogleSheetSyncController extends Controller
     
     public function createSpreadsheet(Request $request)
     {
+        $hostWithPort = route('home');
+
         try {
             $title = $request->input('title');
             $data = $request->input('data', null);
@@ -148,7 +149,7 @@ class GoogleSheetSyncController extends Controller
             $tokenData = Redis::get($this->redisKey);
             if (!$tokenData) {
                 return response()->json([
-                    'error' => 'authenticate with sheet/ url in web.'
+                    'error' => "To get access visit $hostWithPort to in browser."
                 ], 403);
             }
 

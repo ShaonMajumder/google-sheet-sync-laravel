@@ -19,7 +19,8 @@ Route::get('/', function () {
 });
 
 Route::prefix('sheet')->group(function () {
-    Route::get('/', [GoogleSheetSyncController::class, 'sync']);
+    Route::get('/get-access', [GoogleSheetSyncController::class, 'home'])->name('home');
     Route::get('/oauth/callback', [GoogleSheetSyncController::class, 'oauthCallback']);
-    Route::get('/revoke', [GoogleSheetSyncController::class, 'revokeAccessToken']);
+    Route::get('/revoke', [GoogleSheetSyncController::class, 'revoke'])->name('revoke.access');
+    Route::get('/get-access-ouath', [GoogleSheetSyncController::class, 'sync'])->name('get.access');
 });
