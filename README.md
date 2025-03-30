@@ -114,7 +114,7 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
      http://localhost/sheet
      ```
 
-     This route will trigger the `GoogleSheetSyncController` to sync data with Google Sheets.
+     This route will trigger the `GoogleSheetController` to sync data with Google Sheets.
 
    ## Key Classes
 
@@ -167,6 +167,9 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
                 //     "token_type" => "Bearer"
                 //     "created" => 1737240385
                 // ]
+
+
+   // $client->setRedirectUri('http://localhost:8000/sheet/oauth/callback');
    ```
 
    ## Troubleshooting

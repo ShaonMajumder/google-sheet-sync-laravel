@@ -38,10 +38,10 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            Route::prefix('api/v1')
+            Route::prefix('google-sheets/api/v0')
                 ->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/apis/api-v1.php'));
+                ->group(base_path('routes/apis/google-sheets-api-v0.php'));
 
             Route::middleware('web')
                 ->namespace($this->namespace)
