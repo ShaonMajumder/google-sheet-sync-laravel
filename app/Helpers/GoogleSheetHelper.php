@@ -5,10 +5,12 @@ namespace App\Helpers;
 use Exception;
 use Google\Client;
 use Google\Service\Sheets;
+use Google\Service\Sheets\Sheet;
 use Illuminate\Support\Facades\Redis;
 use GuzzleHttp\Client as GuzzleClient;
 use Google\Service\Sheets\ValueRange;
 use Illuminate\Support\Facades\Log;
+use ShaonMajumder\Facades\CacheHelper;
 
 class GoogleSheetHelper
 {
@@ -17,16 +19,17 @@ class GoogleSheetHelper
     private $spreadsheetId;
     private $credentialFile;
     private $redisKey;
+    private $oauthApplicationName;
+    private $driveService;
 
     public function __construct($initializeClient = true)
     {
         // $this->spreadsheetId = env('SPREADSHEET_ID');
+        $this->oauthApplicationName = config('oauth.application_name');
         $this->redisKey = CacheHelper::getCacheKey('google_sheet_access_token');
         $this->credentialFile = env('CREDENTIALS_FILE');
-        // $this->service = new Sheets($this->client);
         if ($initializeClient) {
-            $this->client = $this->getClient();
-            $this->service = new Sheets($this->client);
+            $this->initializeService();
         }
     }
 
@@ -40,20 +43,47 @@ class GoogleSheetHelper
         if (!$this->client || !$this->service) {
             $this->client = $this->getClient();
             $this->service = new Sheets($this->client);
+            $this->driveService = new \Google\Service\Drive($this->client);
         }
+    }
+
+    public function redirectToOauth(){
+        $client = new Client();
+        $client->setApplicationName($this->oauthApplicationName);
+        $this->setScopes($client);
+        $client->setAuthConfig($this->credentialFile);
+        $client->setAccessType('offline');
+
+        $authUrl = $client->createAuthUrl();
+        header("Location: $authUrl");
+        exit();
+    }
+
+    public function refreshAccessToken($client){
+        $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+        $accessToken = $client->getAccessToken();
+        $redisValue = json_encode($accessToken);
+        $redisTTL = $accessToken['expires_in'];
+        
+        CacheHelper::setCache($this->redisKey, $redisValue, $redisTTL);
+    }
+
+    private function setScopes($client){
+        $client->setScopes([
+            Sheets::SPREADSHEETS,
+            Sheets::DRIVE,
+        ]);
     }
 
     private function getClient()
     {
         $client = new Client();
-        $client->setApplicationName('Google Sheets API PHP Quickstart');
-        $client->setScopes(Sheets::SPREADSHEETS);
+        $client->setApplicationName($this->oauthApplicationName);
+        $this->setScopes($client);
         $client->setAuthConfig($this->credentialFile);
         $client->setAccessType('offline');
-        // $client->setRedirectUri('http://localhost:8000/sheet/oauth/callback');
         
-        $tokenData = Redis::get($this->redisKey);
-        
+        $tokenData = CacheHelper::getCache($this->redisKey);
         if ($tokenData) {
             $accessToken = json_decode($tokenData, true);
             $client->setAccessToken($accessToken);
@@ -61,64 +91,47 @@ class GoogleSheetHelper
         
         if ($client->isAccessTokenExpired()) {
             if ($client->getRefreshToken()) {
-                $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+                $this->refreshAccessToken($client);
             } else {
-                $authUrl = $client->createAuthUrl();
-                header("Location: $authUrl");
-                exit();
-                
-                printf("Open the following link in your browser:\n%s\n", $authUrl);
-                print 'Enter verification code: ';
-                $authCode = trim(fgets(STDIN));
-
-                $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
-                $client->setAccessToken($accessToken);
-
-                if (array_key_exists('error', $accessToken)) {
-                    throw new Exception(join(', ', $accessToken));
-                }
+                $this->redirectToOauth();
+                // exits
             }
-
-            $accessToken = $client->getAccessToken();
-            $redisValue = json_encode($accessToken);
-            $redisTTL = $accessToken['expires_in'];
-            
-            Redis::setex($this->redisKey, $redisTTL, $redisValue);
         }
 
         return $client;
     }
 
-    // public function revokeAccessToken()
-    // {
-    //     try {
-    //         $tokenData = Redis::get($this->redisKey);
-    //         if (!$tokenData) {
-    //             return response()->json(['message' => 'No access token found to revoke'], 404);
-    //         }
+    // methods from standalone library
+    public function revokeAccessTokenStandAlone()
+    {
+        try {
+            $tokenData = CacheHelper::getCache($this->redisKey);
+            if (!$tokenData) {
+                return response()->json(['message' => 'No access token found to revoke'], 404);
+            }
 
-    //         $accessToken = json_decode($tokenData, true)['access_token'];
-    //         $guzzleClient = new GuzzleClient();
-    //         $revokeUrl = 'https://oauth2.googleapis.com/revoke?token=' . $accessToken;
-    //         $response = $guzzleClient->post($revokeUrl, [
-    //             'headers' => ['Content-type' => 'application/x-www-form-urlencoded'],
-    //         ]);
+            $accessToken = json_decode($tokenData, true)['access_token'];
+            $guzzleClient = new GuzzleClient();
+            $revokeUrl = 'https://oauth2.googleapis.com/revoke?token=' . $accessToken;
+            $response = $guzzleClient->post($revokeUrl, [
+                'headers' => ['Content-type' => 'application/x-www-form-urlencoded'],
+            ]);
 
-    //         if ($response->getStatusCode() === 200) {
-    //             Redis::del($this->redisKey);
-    //             return response()->json(['message' => 'Access token successfully revoked']);
-    //         }
+            if ($response->getStatusCode() === 200) {
+                CacheHelper::delCache($this->redisKey);
+                return response()->json(['message' => 'Access token successfully revoked']);
+            }
 
-    //         return response()->json(['error' => 'Failed to revoke access token'], $response->getStatusCode());
-    //     } catch (Exception $e) {
-    //         return response()->json(['error' => 'Error revoking access token: ' . $e->getMessage()], 500);
-    //     }
-    // }
+            return response()->json(['error' => 'Failed to revoke access token'], $response->getStatusCode());
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Error revoking access token: ' . $e->getMessage()], 500);
+        }
+    }
 
     public function revokeAccessToken()
     {
         try {
-            $tokenData = Redis::get($this->redisKey);
+            $tokenData = CacheHelper::getCache($this->redisKey);
             if (!$tokenData) {
                 return response()->json(['message' => 'No access token found to revoke'], 404);
             }
@@ -132,7 +145,7 @@ class GoogleSheetHelper
             $client->setAuthConfig($this->credentialFile);
             $client->setAccessToken($accessToken);
             if ($client->revokeToken()) {
-                Redis::del($this->redisKey);
+                CacheHelper::delCache($this->redisKey);
                 return response()->json(['message' => 'Access token successfully revoked']);
             }
 
@@ -153,7 +166,6 @@ class GoogleSheetHelper
             $response = $this->service->spreadsheets->create($spreadsheet, ['fields' => 'spreadsheetId']);
             $spreadsheetId = $response->spreadsheetId;
 
-            // echo "Created new spreadsheet with ID: $spreadsheetId\n";
             Log::info("Created new spreadsheet with ID: $spreadsheetId");
 
             if (!$this->sheetExists($spreadsheetId, $sheetName)) {
@@ -166,16 +178,16 @@ class GoogleSheetHelper
 
             return $spreadsheetId;
         } catch (Exception $e) {
-            echo 'An error occurred: ' . $e->getMessage();
+            Log::error('An error occurred: ' . $e->getMessage());
             return null;
         }
     }
 
-    public function createSheet($spreadsheetId, $sheetName)
+    public function createSheet($sheetName)
     {
         try {
             $this->initializeService();
-            $spreadsheetId = $spreadsheetId ?: $this->spreadsheetId;
+            $spreadsheetId = $this->spreadsheetId;
             $requests = [
                 'addSheet' => [
                     'properties' => [
@@ -188,10 +200,10 @@ class GoogleSheetHelper
             $response = $this->service->spreadsheets->batchUpdate($spreadsheetId, $body);
 
             $sheetId = $response->replies[0]['addSheet']['properties']['sheetId'];
-            echo "Sheet '$sheetName' created with ID: $sheetId\n";
+            Log::info("Sheet '$sheetName' created with ID: $sheetId\n");
             return $sheetId;
         } catch (Exception $e) {
-            echo 'An error occurred: ' . $e->getMessage();
+            Log::error('An error occurred: ' . $e->getMessage());
             return null;
         }
     }
@@ -213,7 +225,7 @@ class GoogleSheetHelper
 
             return false;
         } catch (Exception $e) {
-            echo 'An error occurred while checking if the sheet exists: ' . $e->getMessage() . "\n";
+            Log::error('An error occurred while checking if the sheet exists: ' . $e->getMessage() . "\n");
             return false;
         }
     }
@@ -230,9 +242,9 @@ class GoogleSheetHelper
             $params = ['valueInputOption' => 'RAW'];
             $result = $this->service->spreadsheets_values->update($this->spreadsheetId, $range, $body, $params);
 
-            echo "Data inserted into sheet '$sheetName'.\n";
+            Log::info("Data inserted into sheet '$sheetName'.\n");
         } catch (Exception $e) {
-            echo 'An error occurred: ' . $e->getMessage();
+            Log::error('An error occurred: ' . $e->getMessage());
         }
     }
 
@@ -246,8 +258,37 @@ class GoogleSheetHelper
 
             return $values ?: [];
         } catch (Exception $e) {
-            echo 'An error occurred: ' . $e->getMessage();
+            Log::error('An error occurred: ' . $e->getMessage());
             return null;
+        }
+    }
+
+    public function appendData($sheetName, $data)
+    {
+        try {
+            $this->initializeService();
+            
+            $range = "$sheetName"; // Google Sheets will find the next available row
+            $body = new \Google\Service\Sheets\ValueRange([
+                'values' => $data
+            ]);
+
+            $params = [
+                'valueInputOption' => 'RAW', // Change to USER_ENTERED if you want formulas processed
+                'insertDataOption' => 'INSERT_ROWS' // Appends instead of overwriting
+            ];
+
+            $result = $this->service->spreadsheets_values->append($this->spreadsheetId, $range, $body, $params);
+
+            Log::info("Data successfully appended to sheet '$sheetName'.");
+
+            return $result->getUpdates();
+        } catch (\Google\Service\Exception $e) {
+            Log::error('Google API error: ' . $e->getMessage());
+            return false;
+        } catch (Exception $e) {
+            Log::error('An error occurred: ' . $e->getMessage());
+            return false;
         }
     }
 
@@ -267,12 +308,11 @@ class GoogleSheetHelper
                 $valueRange,
                 ['valueInputOption' => 'RAW']
             );
-            
-            // echo "Data appended successfully to sheet '$sheetName' in spreadsheet ID '$spreadsheetId'.\n";
+
             Log::info("Data appended successfully to sheet '$sheetName' in spreadsheet ID '$spreadsheetId'.");
 
         } catch (Exception $e) {
-            echo 'An error occurred while appending rows: ' . $e->getMessage() . "\n";
+            Log::error('An error occurred while appending rows: ' . $e->getMessage() . "\n");
         }
     }
 
@@ -290,10 +330,107 @@ class GoogleSheetHelper
 
             return $response;
         } catch (Exception $e) {
-            echo 'An error occurred: ' . $e->getMessage();
+            Log::error('An error occurred: ' . $e->getMessage());
             return null;
         }
     }
+
+    public function deleteSpreadsheet($spreadsheetId)
+    {
+        $result = false;
+        try {
+            $this->initializeService();
+
+            $response = $this->driveService->files->delete($spreadsheetId);
+            if ($response->getStatusCode() === 204) {
+                Log::info("Spreadsheet with ID: $spreadsheetId has been deleted successfully.");
+                $result = true;
+            } elseif ($response->getStatusCode() === 404) {
+                Log::error("Spreadsheet with ID: $spreadsheetId not found.");
+            }
+        } catch (Exception $e) {
+            $errorJson = json_decode($e->getMessage(), true);
+            if (isset($errorJson['error']['code']) && $errorJson['error']['code'] === 404) {
+                Log::error('Error deleting spreadsheet: ' . ($errorJson['error']['message'] ?? ''));
+            } else {
+                Log::error('Error deleting spreadsheet: ' . $e->getMessage());
+            }
+        }
+        return $result;
+    }
+
+    public function deleteSheetById($spreadsheetId, $sheetId)
+    {
+        try {
+            $this->initializeService();
+
+            $requests = [
+                new \Google\Service\Sheets\Request([
+                    'deleteSheet' => [
+                        'sheetId' => $sheetId,
+                    ]
+                ])
+            ];
+
+            $batchUpdateRequest = new \Google\Service\Sheets\BatchUpdateSpreadsheetRequest([
+                'requests' => $requests
+            ]);
+            $response = $this->service->spreadsheets->batchUpdate($spreadsheetId, $batchUpdateRequest);
+            Log::info("Sheet with ID: $sheetId has been deleted successfully from spreadsheet ID: $spreadsheetId.");
+            return true;
+        } catch (Exception $e) {
+            // Handle any errors and log them
+            Log::error('Error deleting sheet: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function deleteSheetByName($spreadsheetId, $sheetName)
+    {
+        try {
+            // Initialize the Google Sheets API service
+            $this->initializeService();
+
+            // Retrieve the spreadsheet to find the sheetId for the given sheetName
+            $spreadsheet = $this->service->spreadsheets->get($spreadsheetId);
+            
+            // Iterate through the sheets to find the sheetId
+            $sheetId = null;
+            foreach ($spreadsheet->getSheets() as $sheet) {
+                if ($sheet->getProperties()->getTitle() === $sheetName) {
+                    $sheetId = $sheet->getProperties()->getSheetId();
+                    break;
+                }
+            }
+
+            // If sheet is found, proceed with deletion
+            if ($sheetId !== null) {
+                // Prepare the request to delete the sheet
+                $request = new \Google_Service_Sheets_Request([
+                    'deleteSheet' => [
+                        'sheetId' => $sheetId
+                    ]
+                ]);
+
+                // Execute batch update to delete the sheet
+                $batchUpdateRequest = new \Google_Service_Sheets_BatchUpdateSpreadsheetRequest([
+                    'requests' => [$request]
+                ]);
+                $this->service->spreadsheets->batchUpdate($spreadsheetId, $batchUpdateRequest);
+
+                Log::info("Sheet with name: $sheetName has been deleted successfully.");
+                return true;
+            } else {
+                Log::error("Sheet with name: $sheetName not found.");
+                return false;
+            }
+        } catch (Exception $e) {
+            Log::error('Error deleting sheet: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+
 }
 
 ?>

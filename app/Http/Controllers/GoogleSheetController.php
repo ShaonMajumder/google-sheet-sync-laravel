@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\CacheHelper;
+use ShaonMajumder\Facades\CacheHelper;
 use App\Helpers\GoogleSheetHelper;
 use Illuminate\Http\Request;
 use Exception;
 use Google\Client;
 use Google\Service\Sheets;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
-class GoogleSheetSyncController extends Controller
+
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+
+
+class GoogleSheetController extends Controller
 {
     private $redisKey;
     
@@ -19,63 +25,30 @@ class GoogleSheetSyncController extends Controller
         $this->redisKey = CacheHelper::getCacheKey('google_sheet_access_token');
     }
 
-    public function oauthCallback(Request $request)
+    private function restartApp()
     {
-        if ($request->has('code')) {
-            try {
-                $client = new Client();
-                $client->setApplicationName('Google Sheets API PHP Quickstart');
-                $client->setScopes(Sheets::SPREADSHEETS);
-                $client->setAuthConfig(env('CREDENTIALS_FILE'));
-                $client->setAccessType('offline');
+        $commands = [
+            'php artisan down',
+            'php artisan queue:restart',
+            'php artisan config:clear',
+            'php artisan cache:clear',
+            'php artisan up'
+        ];
 
-                $authCode = $request->input('code');
-                
-                // Exchange the authorization code for an access token
-                $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
-                $client->setAccessToken($accessToken);
+        foreach ($commands as $command) {
+            $process = Process::fromShellCommandline($command);
+            $process->run();
 
-                if (array_key_exists('error', $accessToken)) {
-                    throw new Exception(join(', ', $accessToken));
-                }
-
-                $redisTTL = $accessToken['expires_in'];
-                $redisValue = json_encode($client->getAccessToken());
-                Redis::setex($this->redisKey, $redisTTL, $redisValue);
-
-                $bladeVars = [
-                    'message' => 'Authorization successful, token saved',
-                    'redirectUrl' => route('home'),
-                    'success' => true
-                ];
-            } catch (Exception $e) {
-                $bladeVars = [
-                    'message' => 'Failed to get access token: ' . $e->getMessage(),
-                    'success' => false
-                ];
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
             }
-            return view('oauth.oauth-success', $bladeVars);
-        }
 
-        return response()->json(['error' => 'Authorization code missing'], 400);
+            $this->info("Executed: $command");
+        }
     }
 
     public function getCachedGoogleSheetKey(){
-        return json_decode(Redis::get($this->redisKey), true);
-    }
-
-    public function revoke(){
-        return view('oauth.revoke');
-    }
-
-    public function revokeAccessToken(){
-        $googleSheets = new GoogleSheetHelper(false);
-        return $googleSheets->revokeAccessToken();
-    }
-
-    public function home(){
-        $tokenData = Redis::get($this->redisKey);
-        return view('oauth.home',compact('tokenData'));
+        return json_decode(CacheHelper::getCache($this->redisKey), true);
     }
     
     public function sync(){
@@ -130,29 +103,11 @@ class GoogleSheetSyncController extends Controller
         }
     }
 
-
-
-
-
-    public function googleOuathCheck() {
-
-    }
-    
     public function createSpreadsheet(Request $request)
     {
-        $hostWithPort = route('home');
-
         try {
             $title = $request->input('title');
             $data = $request->input('data', null);
-            
-            $tokenData = Redis::get($this->redisKey);
-            if (!$tokenData) {
-                return response()->json([
-                    'error' => "To get access visit $hostWithPort to in browser."
-                ], 403);
-            }
-
             $googleSheets = new GoogleSheetHelper();
             $spreadsheetId = $googleSheets->createSpreadsheet($title, $data);
 
@@ -167,17 +122,17 @@ class GoogleSheetSyncController extends Controller
         }
     }
 
-    public function createSheet(Request $request)
+    public function createSheet($spreadsheetId, $sheetName)
     {
         try {
-            $sheetName = $request->input('sheetName');
             $googleSheets = new GoogleSheetHelper();
-            
-            $googleSheets->createSheet($sheetName);
+            $googleSheets->setSpreadsheetId($spreadsheetId);
+            $sheetId = $googleSheets->createSheet($sheetName);
 
             return response()->json([
+                'sheetId' => $sheetId,
                 'message' => "Sheet '$sheetName' created successfully."
-            ]);
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage()
@@ -185,13 +140,38 @@ class GoogleSheetSyncController extends Controller
         }
     }
 
-    public function insertData(Request $request)
+    public function deleteSpreadsheet($spreadsheetId){
+        try {
+            $googleSheets = new GoogleSheetHelper();
+            $result = $googleSheets->deleteSpreadsheet($spreadsheetId);
+            if ($result) {
+                return response()->json(['message' => 'Spreadsheet successfully deleted'], 200);
+            }
+            return response()->json(['error' => 'Spreadsheet not found or could not be deleted'], 404);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to delete spreadsheet', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteSheet($spreadsheetId, $sheetName){
+        try {
+            $googleSheets = new GoogleSheetHelper();
+            $result = $googleSheets->deleteSheetByName($spreadsheetId,$sheetName);
+            if ($result) {
+                return response()->json(['message' => 'Sheet successfully deleted'], 200);
+            }
+            return response()->json(['error' => 'Sheet not found or could not be deleted'], 404);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to delete sheet', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function insertData(Request $request, $spreadsheetId, $sheetName)
     {
         try {
-            $sheetName = $request->input('sheetName');
             $data = $request->input('data');
-            
             $googleSheets = new GoogleSheetHelper();
+            $googleSheets->setSpreadsheetId($spreadsheetId);
             $googleSheets->insertData($sheetName, $data);
 
             return response()->json([
@@ -204,12 +184,29 @@ class GoogleSheetSyncController extends Controller
         }
     }
 
-    public function readSheet(Request $request)
+    public function appendData(Request $request, $spreadsheetId, $sheetName)
     {
         try {
-            $sheetName = $request->input('sheetName');
-            
+            $data = $request->input('data');
             $googleSheets = new GoogleSheetHelper();
+            $googleSheets->setSpreadsheetId($spreadsheetId);
+            $googleSheets->appendData($sheetName, $data);
+
+            return response()->json([
+                'message' => "Row appended successfully to sheet '$sheetName'."
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function readSheet($spreadsheetId, $sheetName)
+    {
+        try {
+            $googleSheets = new GoogleSheetHelper();
+            $googleSheets->setSpreadsheetId($spreadsheetId);
             $data = $googleSheets->readSheet($sheetName);
 
             return response()->json([
@@ -222,24 +219,4 @@ class GoogleSheetSyncController extends Controller
             ], 500);
         }
     }
-
-    public function appendRow(Request $request)
-    {
-        try {
-            $sheetName = $request->input('sheetName');
-            $rowData = $request->input('rowData');
-            
-            $googleSheets = new GoogleSheetHelper();
-            $googleSheets->appendRow($rowData, $sheetName);
-
-            return response()->json([
-                'message' => "Row appended successfully to sheet '$sheetName'."
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'error' => 'An error occurred: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
 }
