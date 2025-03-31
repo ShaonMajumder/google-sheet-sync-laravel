@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Exception;
 use Google\Client;
 use Google\Service\Sheets;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
@@ -25,32 +26,12 @@ class GoogleSheetController extends Controller
         $this->redisKey = CacheHelper::getCacheKey('google_sheet_access_token');
     }
 
-    private function restartApp()
-    {
-        $commands = [
-            'php artisan down',
-            'php artisan queue:restart',
-            'php artisan config:clear',
-            'php artisan cache:clear',
-            'php artisan up'
-        ];
-
-        foreach ($commands as $command) {
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-            $this->info("Executed: $command");
-        }
-    }
-
+    // check
     public function getCachedGoogleSheetKey(){
         return json_decode(CacheHelper::getCache($this->redisKey), true);
     }
     
+    // check
     public function sync(){
         try {
             $googleSheets = new GoogleSheetHelper();
@@ -103,7 +84,7 @@ class GoogleSheetController extends Controller
         }
     }
 
-    public function createSpreadsheet(Request $request)
+    public function createSpreadsheet(Request $request): JsonResponse
     {
         try {
             $title = $request->input('title');
@@ -122,7 +103,7 @@ class GoogleSheetController extends Controller
         }
     }
 
-    public function createSheet($spreadsheetId, $sheetName)
+    public function createSheet($spreadsheetId, $sheetName): JsonResponse
     {
         try {
             $googleSheets = new GoogleSheetHelper();
@@ -140,7 +121,8 @@ class GoogleSheetController extends Controller
         }
     }
 
-    public function deleteSpreadsheet($spreadsheetId){
+    public function deleteSpreadsheet($spreadsheetId): JsonResponse
+    {
         try {
             $googleSheets = new GoogleSheetHelper();
             $result = $googleSheets->deleteSpreadsheet($spreadsheetId);
@@ -153,7 +135,8 @@ class GoogleSheetController extends Controller
         }
     }
 
-    public function deleteSheet($spreadsheetId, $sheetName){
+    public function deleteSheet($spreadsheetId, $sheetName): JsonResponse
+    {
         try {
             $googleSheets = new GoogleSheetHelper();
             $result = $googleSheets->deleteSheetByName($spreadsheetId,$sheetName);
@@ -166,7 +149,7 @@ class GoogleSheetController extends Controller
         }
     }
 
-    public function insertData(Request $request, $spreadsheetId, $sheetName)
+    public function insertData(Request $request, $spreadsheetId, $sheetName): JsonResponse
     {
         try {
             $data = $request->input('data');
@@ -184,7 +167,7 @@ class GoogleSheetController extends Controller
         }
     }
 
-    public function appendData(Request $request, $spreadsheetId, $sheetName)
+    public function appendData(Request $request, $spreadsheetId, $sheetName): JsonResponse
     {
         try {
             $data = $request->input('data');
@@ -202,7 +185,7 @@ class GoogleSheetController extends Controller
         }
     }
 
-    public function readSheet($spreadsheetId, $sheetName)
+    public function readSheet($spreadsheetId, $sheetName): JsonResponse
     {
         try {
             $googleSheets = new GoogleSheetHelper();
@@ -219,4 +202,155 @@ class GoogleSheetController extends Controller
             ], 500);
         }
     }
+
+    public function listSpreadsheets(): JsonResponse
+    {
+        try {
+            $googleSheets = new GoogleSheetHelper();
+            $spreadsheets = $googleSheets->listSpreadsheets();
+
+            return response()->json([
+                'status' => true,
+                'message' => "Data fetched successfully.",
+                'data' => $spreadsheets
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function listSheets($spreadsheetId): JsonResponse
+    {
+        try {
+            $googleSheets = new GoogleSheetHelper();
+            $spreadsheets = $googleSheets->listSheets($spreadsheetId);
+            return response()->json([
+                'status' => true,
+                'message' => "Sheet names fetched successfully.",
+                'data' => $spreadsheets
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function sheetExists($spreadsheetId, $sheetName=null): JsonResponse
+    {
+        try {
+            $googleSheets = new GoogleSheetHelper();
+            $spreadsheets = $googleSheets->sheetExists($spreadsheetId, $sheetName);
+            if($spreadsheets){
+                return response()->json([
+                    'status' => true,
+                    'message' => $sheetName ? "Sheet '$sheetName' found." : "Spreadsheet '$spreadsheetId' found.",
+                    'data' => []
+                ], 200);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => $sheetName ? "Sheet '$sheetName' not found." : "Spreadsheet '$spreadsheetId' not found.",
+                'data' => []
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $sheetName ? "Sheet '$sheetName' not found." : "Spreadsheet '$spreadsheetId' not found.",
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function findValue(Request $request, $spreadsheetId, $sheetName): JsonResponse
+    {
+        try {
+            $search = $request->input('search', null);
+            $googleSheets = new GoogleSheetHelper();
+            $googleSheets->setSpreadsheetId($spreadsheetId);
+            $position = $googleSheets->findValue($sheetName, $search);
+            if($position){
+                return response()->json([
+                    'status' => true,
+                    'message' => "Value Found",
+                    'data' => [
+                        'position' => $position
+                    ]
+                ], 200);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => "Search parameter not found",
+                'data' => []
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => "Search parameter not found",
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getSheetMetadata($spreadsheetId, $sheetName=null): JsonResponse
+    {
+        try {
+            $googleSheets = new GoogleSheetHelper();
+            $googleSheets->setSpreadsheetId($spreadsheetId);
+            $result = $googleSheets->getSheetMetadata($spreadsheetId, $sheetName);
+            if($result){
+                return response()->json([
+                    'status' => true,
+                    'message' => "Metadata populated",
+                    'data' => $result
+                ], 200);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => "Metadata not found",
+                'data' => []
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => "Metadata not found",
+                'error' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    public function clearSheet($spreadsheetId, $sheetName): JsonResponse
+    {
+        try {
+            $googleSheets = new GoogleSheetHelper();
+            $googleSheets->setSpreadsheetId($spreadsheetId);
+            $result = $googleSheets->clearSheet($sheetName);
+            if ($result) {
+                return response()->json([
+                    'status' => true,
+                    'message' => "Sheet '$sheetName' cleared successfully.",
+                    'data' => $result
+                ], 200);
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => "Failed to clear sheet '$sheetName'.",
+                'data' => []
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => "Failed to clear sheet '$sheetName'.",
+                'error' => 'An error occurred: ' . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    
 }
