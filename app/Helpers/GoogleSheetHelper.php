@@ -24,7 +24,6 @@ class GoogleSheetHelper
 
     public function __construct($initializeClient = true)
     {
-        // $this->spreadsheetId = env('SPREADSHEET_ID');
         $this->oauthApplicationName = config('oauth.application_name');
         $this->redisKey = CacheHelper::getCacheKey('google_sheet_access_token');
         $this->credentialFile = env('CREDENTIALS_FILE');
@@ -101,7 +100,7 @@ class GoogleSheetHelper
         return $client;
     }
 
-    // methods from standalone library
+    /* Unused
     public function revokeAccessTokenStandAlone()
     {
         try {
@@ -127,7 +126,9 @@ class GoogleSheetHelper
             return response()->json(['error' => 'Error revoking access token: ' . $e->getMessage()], 500);
         }
     }
+    */
 
+    // methods from standalone library
     public function revokeAccessToken()
     {
         try {
@@ -208,133 +209,6 @@ class GoogleSheetHelper
         }
     }
 
-    private function sheetExists($spreadsheetId, $sheetName)
-    {
-        try {
-            $this->initializeService();
-
-            // Get the spreadsheet's metadata
-            $spreadsheet = $this->service->spreadsheets->get($spreadsheetId);
-
-            // Check if any sheet matches the given name
-            foreach ($spreadsheet->getSheets() as $sheet) {
-                if ($sheet->getProperties()->getTitle() === $sheetName) {
-                    return true;
-                }
-            }
-
-            return false;
-        } catch (Exception $e) {
-            Log::error('An error occurred while checking if the sheet exists: ' . $e->getMessage() . "\n");
-            return false;
-        }
-    }
-
-    public function insertData($sheetName, $data)
-    {
-        try {
-            $this->initializeService();
-            $range = "$sheetName!A1";
-            $body = new Sheets\ValueRange([
-                'values' => $data
-            ]);
-
-            $params = ['valueInputOption' => 'RAW'];
-            $result = $this->service->spreadsheets_values->update($this->spreadsheetId, $range, $body, $params);
-
-            Log::info("Data inserted into sheet '$sheetName'.\n");
-        } catch (Exception $e) {
-            Log::error('An error occurred: ' . $e->getMessage());
-        }
-    }
-
-    public function readSheet($sheetName)
-    {
-        try {
-            $this->initializeService();
-            $range = $sheetName;
-            $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $range);
-            $values = $response->getValues();
-
-            return $values ?: [];
-        } catch (Exception $e) {
-            Log::error('An error occurred: ' . $e->getMessage());
-            return null;
-        }
-    }
-
-    public function appendData($sheetName, $data)
-    {
-        try {
-            $this->initializeService();
-            
-            $range = "$sheetName"; // Google Sheets will find the next available row
-            $body = new \Google\Service\Sheets\ValueRange([
-                'values' => $data
-            ]);
-
-            $params = [
-                'valueInputOption' => 'RAW', // Change to USER_ENTERED if you want formulas processed
-                'insertDataOption' => 'INSERT_ROWS' // Appends instead of overwriting
-            ];
-
-            $result = $this->service->spreadsheets_values->append($this->spreadsheetId, $range, $body, $params);
-
-            Log::info("Data successfully appended to sheet '$sheetName'.");
-
-            return $result->getUpdates();
-        } catch (\Google\Service\Exception $e) {
-            Log::error('Google API error: ' . $e->getMessage());
-            return false;
-        } catch (Exception $e) {
-            Log::error('An error occurred: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    public function appendRowToSheet(string $spreadsheetId, string $sheetName, array $data): void
-    {
-        try {
-            $this->initializeService();
-
-            // Define the range to append data to (e.g., sheet name and starting column)
-            $range = $sheetName; // By default, appending to the sheet's end
-            $valueRange = new ValueRange([
-                'values' => $data
-            ]);
-            $response = $this->service->spreadsheets_values->append(
-                $spreadsheetId,
-                $range,
-                $valueRange,
-                ['valueInputOption' => 'RAW']
-            );
-
-            Log::info("Data appended successfully to sheet '$sheetName' in spreadsheet ID '$spreadsheetId'.");
-
-        } catch (Exception $e) {
-            Log::error('An error occurred while appending rows: ' . $e->getMessage() . "\n");
-        }
-    }
-
-    public function appendRow($rowData, $sheetName)
-    {
-        try {
-            $this->initializeService();
-            $range = $sheetName;
-            $body = new Sheets\ValueRange([
-                'values' => [$rowData]
-            ]);
-
-            $params = ['valueInputOption' => 'RAW'];
-            $response = $this->service->spreadsheets_values->append($this->spreadsheetId, $range, $body, $params);
-
-            return $response;
-        } catch (Exception $e) {
-            Log::error('An error occurred: ' . $e->getMessage());
-            return null;
-        }
-    }
-
     public function deleteSpreadsheet($spreadsheetId)
     {
         $result = false;
@@ -388,7 +262,6 @@ class GoogleSheetHelper
     public function deleteSheetByName($spreadsheetId, $sheetName)
     {
         try {
-            // Initialize the Google Sheets API service
             $this->initializeService();
 
             // Retrieve the spreadsheet to find the sheetId for the given sheetName
@@ -406,14 +279,14 @@ class GoogleSheetHelper
             // If sheet is found, proceed with deletion
             if ($sheetId !== null) {
                 // Prepare the request to delete the sheet
-                $request = new \Google_Service_Sheets_Request([
+                $request = new \Google\Service\Sheets\Request([
                     'deleteSheet' => [
                         'sheetId' => $sheetId
                     ]
                 ]);
 
                 // Execute batch update to delete the sheet
-                $batchUpdateRequest = new \Google_Service_Sheets_BatchUpdateSpreadsheetRequest([
+                $batchUpdateRequest = new \Google\Service\Sheets\BatchUpdateSpreadsheetRequest([
                     'requests' => [$request]
                 ]);
                 $this->service->spreadsheets->batchUpdate($spreadsheetId, $batchUpdateRequest);
@@ -430,6 +303,204 @@ class GoogleSheetHelper
         }
     }
 
+    public function insertData($sheetName, $data)
+    {
+        try {
+            $this->initializeService();
+            $range = "$sheetName!A1";
+            $body = new Sheets\ValueRange([
+                'values' => $data
+            ]);
+
+            $params = ['valueInputOption' => 'RAW'];
+            $result = $this->service->spreadsheets_values->update($this->spreadsheetId, $range, $body, $params);
+
+            Log::info("Data inserted into sheet '$sheetName'.\n");
+        } catch (Exception $e) {
+            Log::error('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+    public function appendData($sheetName, $data)
+    {
+        try {
+            $this->initializeService();
+            
+            $range = "$sheetName"; // Google Sheets will find the next available row
+            $body = new \Google\Service\Sheets\ValueRange([
+                'values' => $data
+            ]);
+
+            $params = [
+                'valueInputOption' => 'RAW', // Change to USER_ENTERED if you want formulas processed
+                'insertDataOption' => 'INSERT_ROWS' // Appends instead of overwriting
+            ];
+
+            $result = $this->service->spreadsheets_values->append($this->spreadsheetId, $range, $body, $params);
+
+            Log::info("Data successfully appended to sheet '$sheetName'.");
+
+            return $result->getUpdates();
+        } catch (\Google\Service\Exception $e) {
+            Log::error('Google API error: ' . $e->getMessage());
+            return false;
+        } catch (Exception $e) {
+            Log::error('An error occurred: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function readSheet($sheetName)
+    {
+        try {
+            $this->initializeService();
+            $range = $sheetName;
+            $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $range);
+            $values = $response->getValues();
+
+            return $values ?: [];
+        } catch (Exception $e) {
+            Log::error('An error occurred: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function listSpreadsheets()
+    {
+        try {
+            $this->initializeService();
+
+            // Use the Drive API to list the files
+            $response = $this->driveService->files->listFiles([
+                'q' => "mimeType='application/vnd.google-apps.spreadsheet'",
+                'fields' => 'files(id, name)',
+            ]);
+
+            $files = $response->getFiles();
+
+            if (empty($files)) {
+                Log::info("No spreadsheets found.");
+                return [];
+            }
+
+            $spreadsheetData = [];
+            foreach ($files as $file) {
+                $spreadsheetData[] = [
+                    'id'   => $file->getId(),
+                    'name' => $file->getName(),
+                ];
+            }
+
+            return $spreadsheetData;
+        } catch (Exception $e) {
+            Log::error('An error occurred while listing spreadsheets: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function listSheets($spreadsheetId){
+        try {
+            $this->initializeService();
+
+            // Get the spreadsheet's metadata
+            $spreadsheet = $this->service->spreadsheets->get($spreadsheetId);
+
+            $sheetNames = [];
+            foreach ($spreadsheet->getSheets() as $sheet) {
+                $sheetNames[] = [
+                    'id' => $sheet->getProperties()->getSheetId(),
+                    'title' => $sheet->getProperties()->getTitle()
+                ];
+            }
+            return $sheetNames;
+        } catch (Exception $e) {
+            Log::error('An error occurred while checking if the sheet exists: ' . $e->getMessage() . "\n");
+            return [];
+        }
+    }
+
+    public function sheetExists($spreadsheetId, $sheetName = null)
+    {
+        try {
+            $this->initializeService();
+
+            $sheets = $this->listSheets($spreadsheetId);
+            $sheetTitles = array_column($sheets, 'title');
+            if($sheetName) {
+                if(in_array($sheetName, $sheetTitles)){
+                    return true;
+                }
+            } elseif(!empty($sheetTitles)){
+                return true;
+            }
+
+            return false;
+        } catch (Exception $e) {
+            Log::error('An error occurred while checking if the sheet exists: ' . $e->getMessage() . "\n");
+            return false;
+        }
+    }
+
+    public function findValue($sheetName, $value)
+    {
+        try {
+            $this->initializeService();
+            $range = $sheetName;
+            $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $range);
+            $values = $response->getValues();
+
+            foreach ($values as $rowIndex => $row) {
+                foreach ($row as $colIndex => $cellValue) {
+                    if ($cellValue == $value) {
+                        return [
+                            'row' => $rowIndex + 1,
+                            'column' => chr(65 + $colIndex) // Converts index to A, B, C...
+                        ];
+                    }
+                }
+            }
+            return null;
+        } catch (Exception $e) {
+            Log::error('Error searching for value: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function getSheetMetadata($spreadsheetId, $sheetName=null)
+    {
+        try {
+            $this->initializeService();
+            $spreadsheet = $this->service->spreadsheets->get($spreadsheetId);
+            if (!$sheetName) {
+                return $spreadsheet;
+            }
+            
+            foreach ($spreadsheet->getSheets() as $sheet) {
+                if ($sheet->getProperties()->getTitle() === $sheetName) {
+                    return $sheet->getProperties();
+                }
+            }
+            return null;
+        } catch (Exception $e) {
+            Log::error('Error fetching sheet metadata: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function clearSheet($sheetName)
+    {
+        try {
+            $this->initializeService();
+            $range = $sheetName;
+            $requestBody = new Sheets\ClearValuesRequest();
+            $this->service->spreadsheets_values->clear($this->spreadsheetId, $range, $requestBody);
+            Log::info("Sheet '$sheetName' cleared successfully.");
+            return true;
+        } catch (Exception $e) {
+            Log::error('Error clearing sheet: ' . $e->getMessage());
+            return false;
+        }
+    }
 
 }
 
