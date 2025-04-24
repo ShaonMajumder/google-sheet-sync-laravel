@@ -282,16 +282,19 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    - Project structure initialized and library improvements made.
 
    ### Commit
-   git log --pretty=format:"%h - %s (%an, %ad)" --date=short
-   d1fade9 - Added new methods (Shaon Majumder, 2025-03-31)
-   e99664e - method added insert append delete (Shaon Majumder, 2025-03-31)
-   ba303f2 - api v1 (Shaon Majumder, 2025-02-28)
-   f4c4b84 - authorization pages better ux (Shaon Majumder, 2025-02-28)
-   98bc318 - api (Shaon Majumder, 2025-02-28)
-   0314d43 - Make the cache application unique (Shaon Majumder, 2025-02-28)
-   5bb1da6 - get access-token from httpCookie (Shaon Majumder, 2025-02-08)
-   f6a3d4a - createSheet and createSpreadsheet (Shaon Majumder, 2025-01-20)
-   0173470 - Improving the library (Shaon Majumder, 2025-01-19)
+   git log --pretty=format:"-%h - %s (%an, %ad)" --date=short
+   -3f0d2f8 - docs: update README for v1.2.0 release (Shaon Majumder, 2025-04-24)
+   -f9aa041 - docs: update README for v1.2.0 release (Shaon Majumder, 2025-04-24)
+   -da7b531 - docs: update README for v1.2.0 release (Shaon Majumder, 2025-04-24)
+   -d1fade9 - Added new methods (Shaon Majumder, 2025-03-31)
+   -e99664e - method added insert append delete (Shaon Majumder, 2025-03-31)
+   -ba303f2 - api v1 (Shaon Majumder, 2025-02-28)
+   -f4c4b84 - authorization pages better ux (Shaon Majumder, 2025-02-28)
+   -98bc318 - api (Shaon Majumder, 2025-02-28)
+   -0314d43 - Make the cache application unique (Shaon Majumder, 2025-02-28)
+   -5bb1da6 - get access-token from httpCookie (Shaon Majumder, 2025-02-08)
+   -f6a3d4a - createSheet and createSpreadsheet (Shaon Majumder, 2025-01-20)
+   -0173470 - Improving the library (Shaon Majumder, 2025-01-19)
 
    ## Contributing
 
