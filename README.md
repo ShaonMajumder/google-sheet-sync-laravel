@@ -282,7 +282,9 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    - Project structure initialized and library improvements made.
 
    ### Commit
+   ```bash
    git log --pretty=format:"-%h - %s (%an, %ad)" --date=short
+   ```
    -3f0d2f8 - docs: update README for v1.2.0 release (Shaon Majumder, 2025-04-24)
    -f9aa041 - docs: update README for v1.2.0 release (Shaon Majumder, 2025-04-24)
    -da7b531 - docs: update README for v1.2.0 release (Shaon Majumder, 2025-04-24)
