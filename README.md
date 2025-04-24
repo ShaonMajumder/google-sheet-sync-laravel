@@ -1,8 +1,8 @@
 # Google Sheet Sync Laravel
 > Current Version: **v1.2.0**
-A Laravel-based project to interact with Google Sheets API, allowing users to create, read, update, and append data to Google Sheets directly from a Laravel application.
+[![Latest Version](https://img.shields.io/github/release/ShaonMajumder/google-sheet-sync-laravel.svg?style=flat-square)](https://github.com/ShaonMajumder/google-sheet-sync-laravel/releases/latest)
 
-[![Latest Version](https://img.shields.io/github/v/release/ShaonMajumder/google-sheet-sync-laravel?style=flat-square)](https://github.com/ShaonMajumder/google-sheet-sync-laravel/releases)
+A Laravel-based project to interact with Google Sheets API, allowing users to create, read, update, and append data to Google Sheets directly from a Laravel application.
 
 ## Project Details
 
