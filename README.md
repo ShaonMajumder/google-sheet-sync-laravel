@@ -1,8 +1,8 @@
 # Google Sheet Sync Laravel
-
+> Current Version: **v1.2.0**
 A Laravel-based project to interact with Google Sheets API, allowing users to create, read, update, and append data to Google Sheets directly from a Laravel application.
 
-
+[![Latest Version](https://img.shields.io/github/v/release/ShaonMajumder/google-sheet-sync-laravel?style=flat-square)](https://github.com/ShaonMajumder/google-sheet-sync-laravel/releases)
 
 ## Project Details
 
@@ -16,6 +16,9 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 - Insert data into specific sheets.
 - Read data from Google Sheets.
 - Append rows to Google Sheets.
+
+## Knowledge
+- OAuth 2.0
 
 ## Prerequisites
 
@@ -215,6 +218,81 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    1. **Redirect URI Mismatch**: Ensure the redirect URI matches the one set in Google Cloud Console.
    2. **Token Expiry**: The application automatically refreshes the token if it expires, as long as the refresh token is available.
    3. **Permission Errors**: Ensure the `credentials.json` file has the correct permissions and API scopes.
+
+   ## FAQ
+   ### Semantic Versioning (SemVer)
+   This project adheres to [Semantic Versioning](https://semver.org/)
+   Stick to Semantic Versioning (SemVer), which uses the format:
+
+   ```md
+      MAJOR.MINOR.PATCH
+   ```
+   - MAJOR: Incompatible API changes
+   - MINOR: Backward-compatible functionality
+   - PATCH: Backward-compatible bug fixes
+
+   For example:
+   ```md
+      1.0.0 → Initial stable release
+      1.1.0 → New features like "append multiple rows"
+      1.1.1 → Fix bug in sheet name casing
+      2.0.0 → Break change in auth flow or data format
+   ```
+   # Changelog
+
+   All notable changes to this project will be documented in this file.
+
+   The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+   and this project adheres to [Semantic Versioning](https://semver.org/).
+
+   ---
+
+   ## [1.2.0] - 2025-03-31
+
+   ### ✨ Added
+   - New methods added to SheetService.
+   - Insert, append, and delete row capabilities.
+
+   ---
+
+   ## [1.1.0] - 2025-02-28
+
+   ### ✨ Added
+   - Initial versioned API structure (`/api/v1`).
+
+   ### 🔄 Changed
+   - Enhanced UX for authorization-related pages.
+
+   ### 🛠 Fixed
+   - Applied cache strategy to ensure uniqueness.
+
+   ---
+
+   ## [1.0.1] - 2025-02-08
+
+   ### ✨ Added
+   - Support for reading JWT access-token from `HttpOnly` cookies.
+
+   ---
+
+   ## [1.0.0] - 2025-01-20
+
+   ### 🎉 Initial Release
+   - Basic Google Sheets integration (`createSheet`, `createSpreadsheet`).
+   - Core syncing logic implemented.
+   - Project structure initialized and library improvements made.
+
+   ### Commit
+   git log --pretty=format:"%h - %s (%an, %ad)" --date=short
+   d1fade9 - Added new methods (Shaon Majumder, 2025-03-31)
+   e99664e - method added insert append delete (Shaon Majumder, 2025-03-31)
+   ba303f2 - api v1 (Shaon Majumder, 2025-02-28)
+   f4c4b84 - authorization pages better ux (Shaon Majumder, 2025-02-28)
+   98bc318 - api (Shaon Majumder, 2025-02-28)
+   0314d43 - Make the cache application unique (Shaon Majumder, 2025-02-28)
+   5bb1da6 - get access-token from httpCookie (Shaon Majumder, 2025-02-08)
+   f6a3d4a - createSheet and createSpreadsheet (Shaon Majumder, 2025-01-20)
+   0173470 - Improving the library (Shaon Majumder, 2025-01-19)
 
    ## Contributing
 
