@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GoogleSheetController;
 use App\Http\Controllers\OauthController;
+use App\Http\Controllers\SetupController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -19,9 +20,9 @@ use ShaonMajumder\MicroserviceUtility\UninstallMicroserviceUtility;
 */
 
 Route::get('/', function () {
-    // if (empty(env('CREDENTIALS_FILE'))) {
-    //     return view('setup');
-    // }
+    if (empty(env('CREDENTIALS_FILE'))) {
+        return view('setup');
+    }
 
     return view('welcome');
 });
@@ -32,3 +33,6 @@ Route::prefix('sheet')->group(function () {
     Route::get('/get-access/revoke', [OauthController::class, 'accessTokenRevoke'])->name('revoke.access');
     Route::get('/oauth/callback', [OauthController::class, 'oauthCallback']);
 });
+
+Route::get('/setup', [SetupController::class, 'show'])->name('setup.show');
+Route::post('/setup', [SetupController::class, 'store'])->name('setup.credentials');
