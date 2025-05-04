@@ -90,6 +90,46 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
       REDIS_PORT=6379
       ```
 
+   ### 🔐 Google OAuth Setup for Laravel Google Sheet Sync
+
+   1. **Go to Google Cloud Console**  
+      Open: [Google Cloud Console](https://console.cloud.google.com/)
+
+   2. **Navigate to APIs & Services → Credentials**  
+      [Credentials Page](https://console.cloud.google.com/apis/credentials)
+
+   3. **Download OAuth 2.0 Credentials JSON**  
+      - Locate your existing OAuth 2.0 credential under **"OAuth 2.0 Client IDs"**  
+      - Find the one named, for example: `Web client 1 Laravel Google Sheet Sync`  
+      - Click the **download icon** beside it  
+      - Save the file in your local Laravel project:  
+      `E:\Projects\google-sheet-sync-laravel\storage\client_secret_xxxxx.json`
+
+   4. **Copy the credentials file into the Docker container**
+
+      ```bash
+      docker cp "E:\Projects\google-sheet-sync-laravel\storage\client_secret_xxxxx.json" googlesheet-laravel-app:/var/www/html/storage/
+      ```
+
+   5. **Update `.env`**
+
+      ```env
+      CREDENTIALS_FILE=../storage/client_secret_xxxxx.json
+      ```
+
+   6. **Copy updated `.env` into Docker container**
+
+      ```bash
+      docker cp .env googlesheet-laravel-app:/var/www/html/.env
+      ```
+
+   7. **Clear Laravel config cache inside the container**
+
+      ```bash
+      docker compose exec app php artisan config:clear
+      ```
+
+
    ## Usage
 
    ### Step 1: Authentication
@@ -175,6 +215,23 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    ```
 
    ## Troubleshooting
+   ### Updating .env values in docker
+   - see existing .env file in container -
+   ```bash
+   docker compose exec app cat .env
+   ```
+
+   - change in .env locally 
+
+   - copy .env into docker container -
+   ```bash
+   docker cp .env googlesheet-laravel-app:/var/www/html/.env
+   ```
+
+   - config .env update inside docker container -
+   ```bash
+   docker compose exec app php artisan config:clear
+   ```
 
    ### 1. **Redis Issues**
 
