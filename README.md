@@ -264,7 +264,7 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
          docker compose exec app php artisan config:clear
          ```
 
-   ### 1. **Redis Issues**
+   ### **Redis Issues**
 
    If you encounter issues with Redis, follow these steps:
 
@@ -277,22 +277,41 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    - Ensure Redis is running and accessible by the application.
 
    ### 2. **Docker and Redis Connection**
+      **RedisException - Connection refused**
+      - Set up token storage: Ensure you have a Redis server running and update .env:
 
-   If you're using Docker, you may need to update the `REDIS_HOST` to the IP address of your Docker container. Follow these steps:
+         REDIS_HOST=127.0.0.1
+         REDIS_PASSWORD=null
+         REDIS_PORT=6379
 
-   1. Check the Docker network:
+         - if you are using docker,
+         REDIS_HOST=redis
+         REDIS_PASSWORD=null
+         REDIS_PORT=6379
 
-      ```bash
-      ip addr show docker0
-      ```
+         here redis is container name in docker-compose.yml
+         ```bash
+            redis:
+               image: redis:alpine
+               container_name: laravel-redis
+               restart: unless-stopped
+         ```
 
-      Look for the IP address under `inet`, typically something like `172.17.0.1`.
+      If you're using Docker, you may need to update the `REDIS_HOST` to the IP address of your Docker container. Follow these steps:
 
-   2. Update the `.env` file with the Docker IP:
+      1. Check the Docker network:
 
-      ```env
-      REDIS_HOST=172.17.0.1
-      ```
+         ```bash
+         ip addr show docker0
+         ```
+
+         Look for the IP address under `inet`, typically something like `172.17.0.1`.
+
+      2. Update the `.env` file with the Docker IP:
+
+         ```env
+         REDIS_HOST=172.17.0.1
+         ```
 
    ### 3. **OAuth Issues**
 
