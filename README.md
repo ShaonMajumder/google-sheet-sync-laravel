@@ -247,22 +247,22 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
          ```
 
    ### Updating .env values in docker
-   - see existing .env file in container -
-   ```bash
-   docker compose exec app cat .env
-   ```
+      1. see existing .env file in container -
+         ```bash
+         docker compose exec app cat .env
+         ```
 
-   - change in .env locally 
+      2. change in .env locally 
 
-   - copy .env into docker container -
-   ```bash
-   docker cp .env googlesheet-laravel-app:/var/www/html/.env
-   ```
+      3. copy .env into docker container -
+         ```bash
+         docker cp .env googlesheet-laravel-app:/var/www/html/.env
+         ```
 
-   - config .env update inside docker container -
-   ```bash
-   docker compose exec app php artisan config:clear
-   ```
+      4. config .env update inside docker container -
+         ```bash
+         docker compose exec app php artisan config:clear
+         ```
 
    ### 1. **Redis Issues**
 
