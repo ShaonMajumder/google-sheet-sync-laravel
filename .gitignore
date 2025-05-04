@@ -15,3 +15,4 @@ yarn-error.log
 /.vscode
 # Ignore Google credentials
 storage/client_secret*.json
+supervisord.log

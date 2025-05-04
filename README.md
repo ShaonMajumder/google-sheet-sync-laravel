@@ -215,6 +215,37 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    ```
 
    ## Troubleshooting
+   ### Removing Accidental Credential File from Git History
+      1. **Backup Your Repository**  
+         Before making any changes, ensure you have a backup of your repository.
+
+      2. **Run Git Filter-Branch to Remove the File**  
+         Use the following command to remove the credentials file from all commits in the repository's history:
+      ```bash
+      git filter-branch --force --index-filter \
+      "git rm --cached --ignore-unmatch storage/client_secret_*.json" \
+      --prune-empty --tag-name-filter cat -- --all
+      ```
+
+      3. **Remove Refs to Original History**
+         Clean up any refs that Git may have created during the filter-branch operation:
+      ```bash
+      rm -rf .git/refs/original/
+
+      4. **Expire the Reflog and Garbage Collect**
+         This will remove the old, now unreachable history:
+      ```bash
+      git reflog expire --expire=now --all
+      git gc --prune=now --aggressive
+      ```
+
+      5. **Force Push the Clean History to the Remote**
+         Finally, force-push the cleaned history and tags to the remote repository:
+      ```bash
+      git push origin --force --all
+      git push origin --force --tags
+      ```
+
    ### Updating .env values in docker
    - see existing .env file in container -
    ```bash
