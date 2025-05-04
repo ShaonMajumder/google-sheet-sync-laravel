@@ -31,6 +31,7 @@ COPY . .
 # Copy Nginx and Supervisor configs
 COPY ./docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY ./docker/supervisord.conf /etc/supervisord.conf
+COPY ./.env.example /var/www/html/.env
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
