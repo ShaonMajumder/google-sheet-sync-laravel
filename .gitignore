@@ -13,3 +13,5 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+# Ignore Google credentials
+storage/client_secret*.json
