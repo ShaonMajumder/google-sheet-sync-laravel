@@ -4,7 +4,7 @@
 A Laravel-based project to interact with Google Sheets API, allowing users to create, read, update, and append data to Google Sheets directly from a Laravel application.
 
 ## Project Details
-
+- **Backend Language**: PHP 7.4
 - **Framework**: Laravel Framework 8.83.29
 - **Purpose**: Synchronize data between your Laravel application and Google Sheets using Google Sheets API.
 
@@ -29,18 +29,9 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    - Create OAuth 2.0 credentials and download the `credentials.json` file.
 
 2. **Environment Setup**:
+   - Docker
 
-   - PHP >= 7.4
-   - Composer
-   - Laravel Framework 8.83.29
-
-3. **Other Requirements**:
-
-   - Access to a Redis server for token storage.
-
-   1. - 
-
-   ## Installation
+## Installation
 
    1. Clone the repository:
 
@@ -52,42 +43,13 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    2. Install dependencies:
 
       ```
-      composer install
+      docker-compose up --build
       ```
 
-   3. Set up environment variables:
-
-      ```
-      cp .env.example .env
-      ```
-
-      Update the following values in `.env`:
+   3. Update the following values in `.env`:
 
       ```
       CREDENTIALS_FILE=/path/to/your/credentials.json
-      SPREADSHEET_ID=your-default-spreadsheet-id
-      ```
-
-   4. Generate application key:
-
-      ```
-      php artisan key:generate
-      ```
-
-   5. Clear and cache configurations:
-
-      ```
-      php artisan config:clear
-      php artisan cache:clear
-      php artisan config:cache
-      ```
-
-   6. Set up token storage: Ensure you have a Redis server running and update `.env`:
-
-      ```
-      REDIS_HOST=127.0.0.1
-      REDIS_PASSWORD=null
-      REDIS_PORT=6379
       ```
 
    ### 🔐 Google OAuth Setup for Laravel Google Sheet Sync
@@ -215,6 +177,13 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
    ```
 
    ## Troubleshooting
+   ### Clear and cache configurations:
+
+      ```
+      php artisan config:clear
+      php artisan cache:clear
+      php artisan config:cache
+      ```
    ### Removing Accidental Credential File from Git History
       1. **Backup Your Repository**  
          Before making any changes, ensure you have a backup of your repository.
