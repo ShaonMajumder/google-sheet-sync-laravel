@@ -19,6 +19,10 @@ use ShaonMajumder\MicroserviceUtility\UninstallMicroserviceUtility;
 */
 
 Route::get('/', function () {
+    // if (empty(env('CREDENTIALS_FILE'))) {
+    //     return view('setup');
+    // }
+
     return view('welcome');
 });
 

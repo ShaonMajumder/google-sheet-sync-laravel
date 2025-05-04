@@ -1,5 +1,6 @@
 # version: '3.8'
 # windows tested - sometime needs to close realtime protection in windows
+# solved a long time problem - mount whole project folder except vendor folder - which allows `composer install` command to build the packages during `docker-compose build`
 
 services:
   app:
@@ -12,6 +13,21 @@ services:
     working_dir: /var/www/html
     volumes:
       # - .:/var/www/html # mounting resist composer install to be available in runtime
+      # ✅ Do NOT mount root folder (.)
+      # - ./app:/var/www/html/app
+      # - ./bootstrap:/var/www/html/bootstrap
+      # - ./config:/var/www/html/config
+      # - ./database:/var/www/html/database
+      # - ./packages:/var/www/html/packages
+      # - ./public:/var/www/html/public
+      # - ./resources:/var/www/html/resources
+      # - ./routes:/var/www/html/routes
+      # - ./storage:/var/www/html/storage
+      # - ./tests:/var/www/html/tests
+      # - ./artisan:/var/www/html/artisan
+      # # # Laravel Source Folders End
+      - .:/var/www/html  # Mount whole project
+      - vendor:/var/www/html/vendor # Except vendor
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini # Optional: custom PHP config
       - /e/Projects/packages/microservice-utility:/var/www/html/packages/microservice-utility # For windows
       - /e/Projects/packages/caching:/var/www/html/packages/caching # For windows
@@ -59,6 +75,7 @@ services:
 
 volumes:
   dbdata:
+  vendor:
 
 networks:
   laravel:
