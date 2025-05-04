@@ -26,11 +26,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "/home/shaonmajumder/Projects/packages/microservice-utility"
-        },
-        {
-            "type": "path",
-            "url": "/home/shaonmajumder/Projects/packages/caching"
+            "url": "packages/microservice-utility"
         }
     ],
     "autoload": {
