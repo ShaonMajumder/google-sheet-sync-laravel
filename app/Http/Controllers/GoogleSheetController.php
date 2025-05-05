@@ -689,6 +689,42 @@ class GoogleSheetController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/google-sheets/api/v0/list-spreadsheets",
+     *     tags={"Google Sheets"},
+     *     summary="List all accessible Google Spreadsheets",
+     *     description="Returns a list of spreadsheet names and IDs that the authenticated user has access to.",
+     *     operationId="listSpreadsheets",
+     *     tags={"GoogleSheet"},
+     *     security={{"api_key":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful response",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Data fetched successfully."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="string", example="1xflMe941GgXbQOqtud91fbzTHo8A3_nXO2D7dwvYypU"),
+     *                     @OA\Property(property="name", type="string", example="To-do list")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="error", type="string", example="An error occurred: Something went wrong")
+     *         )
+     *     )
+     * )
+     */
     public function listSpreadsheets(): JsonResponse
     {
         try {
@@ -708,6 +744,49 @@ class GoogleSheetController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/google-sheets/api/v0/list-sheets/{spreadsheetId}",
+     *     tags={"Google Sheets"},
+     *     summary="List sheets in a spreadsheet",
+     *     description="Fetches the names of all sheets within a specific spreadsheet using the given spreadsheet ID.",
+     *     operationId="listSheets",
+     *     tags={"GoogleSheet"},
+     *     security={{"api_key":{}}},
+     *     @OA\Parameter(
+     *         name="spreadsheetId",
+     *         in="path",
+     *         required=true,
+     *         description="The unique ID of the Google Spreadsheet",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sheet names fetched successfully.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Sheet names fetched successfully."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=0),
+     *                      @OA\Property(property="title", type="string", example="Sheet1")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An unexpected error occurred.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="error", type="string", example="An error occurred: Invalid spreadsheet ID.")
+     *         )
+     *     )
+     * )
+     */
     public function listSheets($spreadsheetId): JsonResponse
     {
         try {
@@ -726,6 +805,49 @@ class GoogleSheetController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/google-sheets/api/v0/sheet-exists/{spreadsheetId}/{sheetName}",
+     *     tags={"Google Sheets"},
+     *     summary="Check if a spreadsheet or a specific sheet exists",
+     *     description="Checks whether a spreadsheet exists by ID, and optionally verifies the existence of a specific sheet name within it.",
+     *     operationId="sheetExists",
+     *     tags={"GoogleSheet"},
+     *     security={{"api_key":{}}},
+     *     @OA\Parameter(
+     *         name="spreadsheetId",
+     *         in="path",
+     *         required=true,
+     *         description="The ID of the Google Spreadsheet",
+     *         @OA\Schema(type="string", example="17d_LsLoqo6939eMZ1dwrsAypdODcJvTsOmfipmJXYKw")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sheetName",
+     *         in="path",
+     *         required=false,
+     *         description="The name of the sheet to check (optional)",
+     *         @OA\Schema(type="string", example="Sheet1")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sheet or spreadsheet found.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Sheet 'Sheet1' found."),
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Sheet or spreadsheet not found, or an error occurred.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Sheet 'Sheet1' not found."),
+     *             @OA\Property(property="error", type="string", example="An error occurred: Invalid spreadsheet ID.")
+     *         )
+     *     )
+     * )
+     */
     public function sheetExists($spreadsheetId, $sheetName=null): JsonResponse
     {
         try {
@@ -752,6 +874,64 @@ class GoogleSheetController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/google-sheets/api/v0/find-value/{spreadsheetId}/{sheetName}",
+     *     tags={"GoogleSheet"},
+     *     summary="Find a value in a specific sheet",
+     *     description="Searches for a specific value in a given sheet of a Google Spreadsheet.",
+     *     operationId="findValueInSheet",
+     *     security={{"api_key":{}}},
+     *     @OA\Parameter(
+     *         name="spreadsheetId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the Google Spreadsheet",
+     *         @OA\Schema(type="string", example="17d_LsLoqo6939eMZ1dwrsAypdODcJvTsOmfipmJXYKw")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sheetName",
+     *         in="path",
+     *         required=true,
+     *         description="Name of the sheet to search in",
+     *         @OA\Schema(type="string", example="Sheet1")
+     *     ),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         required=true,
+     *         description="The value to search for in the sheet",
+     *         @OA\Schema(type="string", example="Name")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Value found successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Value Found"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="position",
+     *                     type="object",
+     *                     @OA\Property(property="row", type="integer", example=1),
+     *                     @OA\Property(property="column", type="string", example="A")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Search parameter not found or other error occurred",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Search parameter not found"),
+     *             @OA\Property(property="error", type="string", example="An error occurred: Sheet not accessible")
+     *         )
+     *     )
+     * )
+     */
     public function findValue(Request $request, $spreadsheetId, $sheetName): JsonResponse
     {
         try {
@@ -782,6 +962,68 @@ class GoogleSheetController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/google-sheets/api/v0/get-sheet-metadata/{spreadsheetId}/{sheetName}",
+     *     tags={"GoogleSheet"},
+     *     summary="Get metadata of a specific sheet",
+     *     description="Fetches metadata for a specified sheet within a Google Spreadsheet.",
+     *     operationId="getSheetMetadata",
+     *     security={{"api_key":{}}},
+     *     @OA\Parameter(
+     *         name="spreadsheetId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the Google Spreadsheet",
+     *         @OA\Schema(type="string", example="17d_LsLoqo6939eMZ1dwrsAypdODcJvTsOmfipmJXYKw")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sheetName",
+     *         in="path",
+     *         required=true,
+     *         description="Name of the sheet to get metadata for",
+     *         @OA\Schema(type="string", example="Sheet1")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sheet metadata retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Metadata populated"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="hidden", type="boolean", nullable=true),
+     *                 @OA\Property(property="index", type="integer", example=0),
+     *                 @OA\Property(property="rightToLeft", type="boolean", nullable=true),
+     *                 @OA\Property(property="sheetId", type="integer", example=0),
+     *                 @OA\Property(property="sheetType", type="string", example="GRID"),
+     *                 @OA\Property(property="title", type="string", example="Sheet1"),
+     *                 @OA\Property(
+     *                     property="gridProperties",
+     *                     type="object",
+     *                     @OA\Property(property="columnCount", type="integer", example=26),
+     *                     @OA\Property(property="rowCount", type="integer", example=1000),
+     *                     @OA\Property(property="columnGroupControlAfter", type="integer", nullable=true),
+     *                     @OA\Property(property="rowGroupControlAfter", type="integer", nullable=true),
+     *                     @OA\Property(property="frozenColumnCount", type="integer", nullable=true),
+     *                     @OA\Property(property="frozenRowCount", type="integer", nullable=true),
+     *                     @OA\Property(property="hideGridlines", type="boolean", nullable=true)
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Metadata not found or an error occurred",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Metadata not found"),
+     *             @OA\Property(property="error", type="string", example="An error occurred: Sheet not found")
+     *         )
+     *     )
+     * )
+     */
     public function getSheetMetadata($spreadsheetId, $sheetName=null): JsonResponse
     {
         try {
@@ -809,6 +1051,49 @@ class GoogleSheetController extends Controller
         }
     }
     
+    /**
+     * @OA\Get(
+     *     path="/google-sheets/api/v0/clear-sheet/{spreadsheetId}/{sheetName}",
+     *     tags={"GoogleSheet"},
+     *     summary="Clear all data from a sheet",
+     *     description="Clears all values in the specified sheet of a Google Spreadsheet.",
+     *     operationId="clearSheet",
+     *     security={{"api_key":{}}},
+     *     @OA\Parameter(
+     *         name="spreadsheetId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the Google Spreadsheet",
+     *         @OA\Schema(type="string", example="17d_LsLoqo6939eMZ1dwrsAypdODcJvTsOmfipmJXYKw")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sheetName",
+     *         in="path",
+     *         required=true,
+     *         description="Name of the sheet to clear",
+     *         @OA\Schema(type="string", example="Sheet1")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sheet cleared successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Sheet 'Sheet1' cleared successfully."),
+     *             @OA\Property(property="data", type="boolean", example=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Failed to clear the sheet",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to clear sheet 'Sheet1'."),
+     *             @OA\Property(property="error", type="string", example="An error occurred: Sheet not found"),
+     *             @OA\Property(property="data", type="array", @OA\Items())
+     *         )
+     *     )
+     * )
+     */
     public function clearSheet($spreadsheetId, $sheetName): JsonResponse
     {
         try {

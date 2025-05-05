@@ -97,6 +97,14 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
     docker compose exec app php artisan config:clear
     ```
 
+## Development
+
+-   update api documentaion :
+
+    ```bash
+        php artisan l5-swagger:generate
+    ```
+
 ## Usage
 
 ### Step 1: Authentication
