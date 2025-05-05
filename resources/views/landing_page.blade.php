@@ -49,7 +49,7 @@
                 <li>Upload in <a href="{{ route('setup.show') }}" target="_blank" class="text-blue-600 underline">Setup page</a></li>
                 <li><a href="{{ route('get.access') }}" class="text-blue-600 underline">Get Access</a></li>
                 <li>Get the api key</li>
-                <li>Use <a href="{{ route('api.guide') }}" target="_blank" class="text-blue-600 underline">Api Guide</a></li>
+                <li>Use <a href="{{ url('api/documentation') }}" target="_blank" class="text-blue-600 underline">Api Guide</a></li>
             </ol>
         </div>
 

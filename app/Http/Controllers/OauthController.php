@@ -12,13 +12,21 @@ use Illuminate\Support\Facades\Redis;
 
 /**
  * @OA\Info(
- *     title="API Documentation",
- *     version="1.0.0",
- *     description="API documentation for our system.",
+ *     title="Google Sheet Sync Laravel API",
+ *     version="1.2.0",
+ *     description="A Laravel-based API to synchronize data with Google Sheets. This API allows authentication using OAuth 2.0 and supports reading, writing, appending, and managing Google Spreadsheet data.",
  *     @OA\Contact(
- *         email="support@example.com"
+ *         email="smazoomder@gmail.com"
  *     )
  * )
+ * 
+ * @OA\SecurityScheme(
+ *     securityScheme="api_key",
+ *     type="apiKey",
+ *     in="header",
+ *     name="X-API-KEY"
+ * )
+ * 
  */
 class OauthController extends Controller
 {
@@ -52,15 +60,17 @@ class OauthController extends Controller
     /**
      * @OA\Get(
      *     path="/google-sheets/api/v0/access-revoke",
-     *     summary="Revoke access to Google Sheets",
+     *     summary="Revoke Google Sheets Access",
+     *     description="Revokes the current OAuth access token and removes it from cache.",
      *     tags={"Google Sheets"},
+     *     security={{"api_key":{}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Access revoked successfully"
+     *         description="Access token successfully revoked"
      *     ),
      *     @OA\Response(
      *         response=400,
-     *         description="Invalid request"
+     *         description="Failed to revoke access token"
      *     )
      * )
      */

@@ -1,12 +1,12 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "API Documentation",
-        "description": "API documentation for our system.",
+        "title": "Google Sheet Sync Laravel API",
+        "description": "A Laravel-based API to synchronize data with Google Sheets. This API allows authentication using OAuth 2.0 and supports reading, writing, appending, and managing Google Spreadsheet data.",
         "contact": {
-            "email": "support@example.com"
+            "email": "smazoomder@gmail.com"
         },
-        "version": "1.0.0"
+        "version": "1.2.0"
     },
     "paths": {
         "/google-sheets/api/v0/access-revoke": {
@@ -14,16 +14,31 @@
                 "tags": [
                     "Google Sheets"
                 ],
-                "summary": "Revoke access to Google Sheets",
+                "summary": "Revoke Google Sheets Access",
+                "description": "Revokes the current OAuth access token and removes it from cache.",
                 "operationId": "72a0dc89ce8a82cd8893c77d7e65a2a1",
                 "responses": {
                     "200": {
-                        "description": "Access revoked successfully"
+                        "description": "Access token successfully revoked"
                     },
                     "400": {
-                        "description": "Invalid request"
+                        "description": "Failed to revoke access token"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "api_key": {
+                "type": "apiKey",
+                "name": "X-API-KEY",
+                "in": "header"
             }
         }
     },
