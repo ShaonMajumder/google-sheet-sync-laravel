@@ -68,7 +68,7 @@ class OauthController extends Controller
         $googleSheets = new GoogleSheetHelper(false);
         $status = $googleSheets->revokeAccessToken();
         if($status){
-            return redirect()->json(['message' => 'Access token successfully revoked']);
+            return response()->json(['message' => 'Access token successfully revoked']);
         } else {
             return response()->json(['error' => 'Failed to revoke access token'], 400);
         }
