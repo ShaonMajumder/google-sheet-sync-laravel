@@ -17,7 +17,7 @@
 
                     if (seconds <= 0) {
                         clearInterval(interval);
-                        window.location.href = "{{ route('home') }}";
+                        window.location.href = "{{ route('landing.page') }}";
                     }
                 }, 1000);
             });

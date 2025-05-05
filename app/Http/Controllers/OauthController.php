@@ -10,6 +10,16 @@ use Google\Client;
 use Google\Service\Sheets;
 use Illuminate\Support\Facades\Redis;
 
+/**
+ * @OA\Info(
+ *     title="API Documentation",
+ *     version="1.0.0",
+ *     description="API documentation for our system.",
+ *     @OA\Contact(
+ *         email="support@example.com"
+ *     )
+ * )
+ */
 class OauthController extends Controller
 {
     private $redisKey;
@@ -19,6 +29,14 @@ class OauthController extends Controller
     {
         $this->oauthApplicationName = config('oauth.application_name');
         $this->redisKey = CacheHelper::getCacheKey('google_sheet_access_token');
+    }
+
+    public function landingPage(){
+        $tokenData = CacheHelper::getCache($this->redisKey);
+        return view('landing_page', [
+            'needsSetup' => empty(env('CREDENTIALS_FILE')),
+            'tokenData' => $tokenData
+        ]);
     }
 
     public function home(){
@@ -31,6 +49,21 @@ class OauthController extends Controller
         $oauth->redirectToOauth();
     }
 
+    /**
+     * @OA\Get(
+     *     path="/google-sheets/api/v0/access-revoke",
+     *     summary="Revoke access to Google Sheets",
+     *     tags={"Google Sheets"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Access revoked successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request"
+     *     )
+     * )
+     */
     public function revokeAccessToken(){
         $googleSheets = new GoogleSheetHelper(false);
         $status = $googleSheets->revokeAccessToken();
@@ -76,7 +109,7 @@ class OauthController extends Controller
                 CacheHelper::setCache($this->redisKey, $redisValue, $redisTTL);
                 $bladeVars = [
                     'message' => 'Authorization successful, token saved',
-                    'redirectUrl' => route('home'),
+                    'redirectUrl' => route('landing.page'),
                     'success' => true
                 ];
             } catch (Exception $e) {

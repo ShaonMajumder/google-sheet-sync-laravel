@@ -19,13 +19,7 @@ use ShaonMajumder\MicroserviceUtility\UninstallMicroserviceUtility;
 |
 */
 
-Route::get('/', function () {
-    if (empty(env('CREDENTIALS_FILE'))) {
-        return view('setup');
-    }
-
-    return view('welcome');
-});
+Route::get('/', [OauthController::class, 'landingPage'])->name('landing.page');
 
 Route::prefix('sheet')->group(function () {
     Route::get('/get-access', [OauthController::class, 'home'])->name('home');
@@ -37,3 +31,4 @@ Route::prefix('sheet')->group(function () {
 
 Route::get('/setup', [SetupController::class, 'show'])->name('setup.show');
 Route::post('/setup', [SetupController::class, 'store'])->name('setup.credentials');
+Route::get('/api-guide', [SetupController::class, 'apiGuide'])->name('api.guide');

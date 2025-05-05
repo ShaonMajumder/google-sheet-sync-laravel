@@ -1,0 +1,36 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Documentation",
+        "description": "API documentation for our system.",
+        "contact": {
+            "email": "support@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/google-sheets/api/v0/access-revoke": {
+            "get": {
+                "tags": [
+                    "Google Sheets"
+                ],
+                "summary": "Revoke access to Google Sheets",
+                "operationId": "72a0dc89ce8a82cd8893c77d7e65a2a1",
+                "responses": {
+                    "200": {
+                        "description": "Access revoked successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Google Sheets",
+            "description": "Google Sheets"
+        }
+    ]
+}
