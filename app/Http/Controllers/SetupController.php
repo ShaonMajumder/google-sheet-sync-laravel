@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Artisan;
 
 class SetupController extends Controller
 {
@@ -39,6 +40,7 @@ class SetupController extends Controller
 
             File::put($envPath, $envContent);
         }
+        Artisan::call('config:clear');
 
         return redirect()->route('setup.show')->with('success', 'Credentials saved successfully!');
     }

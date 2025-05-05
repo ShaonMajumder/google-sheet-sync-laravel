@@ -33,7 +33,22 @@ class OauthController extends Controller
 
     public function revokeAccessToken(){
         $googleSheets = new GoogleSheetHelper(false);
-        return $googleSheets->revokeAccessToken();
+        $status = $googleSheets->revokeAccessToken();
+        if($status){
+            return redirect()->json(['message' => 'Access token successfully revoked']);
+        } else {
+            return response()->json(['error' => 'Failed to revoke access token'], 400);
+        }
+    }
+
+    public function revokeAccessToken2(){
+        $googleSheets = new GoogleSheetHelper(false);
+        $status = $googleSheets->revokeAccessToken();
+        if($status){
+            return redirect()->route('revoke.access')->with('success', 'Access revoked successfully.');
+        } else {
+            return redirect()->route('revoke.access')->with('error', 'Failed to revoke access.');
+        }
     }
     
     public function oauthCallback(Request $request)

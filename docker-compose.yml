@@ -26,9 +26,9 @@ services:
       # - ./tests:/var/www/html/tests
       # - ./artisan:/var/www/html/artisan
       # # # Laravel Source Folders End
+      # - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini # Optional: custom PHP config
       - .:/var/www/html  # Mount whole project
       - vendor:/var/www/html/vendor # Except vendor
-      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini # Optional: custom PHP config
       - /e/Projects/packages/microservice-utility:/var/www/html/packages/microservice-utility # For windows
       - /e/Projects/packages/caching:/var/www/html/packages/caching # For windows
     networks:

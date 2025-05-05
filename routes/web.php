@@ -31,6 +31,7 @@ Route::prefix('sheet')->group(function () {
     Route::get('/get-access', [OauthController::class, 'home'])->name('home');
     Route::get('/get-access/ouath', [OauthController::class, 'ouathAccess'])->name('get.access');
     Route::get('/get-access/revoke', [OauthController::class, 'accessTokenRevoke'])->name('revoke.access');
+    Route::post('/get-access/revoke/delete', [OauthController::class, 'revokeAccessToken2'])->name('revoke.access.delete');
     Route::get('/oauth/callback', [OauthController::class, 'oauthCallback']);
 });
 

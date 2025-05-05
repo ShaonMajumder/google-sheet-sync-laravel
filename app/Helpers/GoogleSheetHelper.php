@@ -147,12 +147,12 @@ class GoogleSheetHelper
             $client->setAccessToken($accessToken);
             if ($client->revokeToken()) {
                 CacheHelper::delCache($this->redisKey);
-                return response()->json(['message' => 'Access token successfully revoked']);
+                return true;
             }
-
-            return response()->json(['error' => 'Failed to revoke access token'], 400);
+            return false;
         } catch (Exception $e) {
-            return response()->json(['error' => 'Error revoking access token: ' . $e->getMessage()], 500);
+            Log::error('Error revoking access token: ' . $e->getMessage());
+            return false;
         }
     }
 

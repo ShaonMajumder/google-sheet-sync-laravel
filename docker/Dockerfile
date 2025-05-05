@@ -31,16 +31,15 @@ COPY . .
 # Copy Nginx and Supervisor configs
 COPY ./docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY ./docker/supervisord.conf /etc/supervisord.conf
-COPY ./.env.example /var/www/html/.env
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
     git config --global --add safe.directory /var/www/html
-    # for windows
-    # 0.484 fatal: detected dubious ownership in repository at '/var/www/html'
-    # 0.484 To add an exception for this directory, call:
-    # 0.484
-    # 0.484   git config --global --add safe.directory /var/www/html
+# for windows
+# 0.484 fatal: detected dubious ownership in repository at '/var/www/html'
+# 0.484 To add an exception for this directory, call:
+# 0.484
+# 0.484   git config --global --add safe.directory /var/www/html
 
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader \
