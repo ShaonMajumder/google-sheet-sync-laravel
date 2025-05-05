@@ -30,9 +30,9 @@ Route::middleware(['microservice-utility.api.key','google.sheets.auth'])->name('
     Route::post('create-sheet/{spreadsheetId}/{sheetName}', [GoogleSheetController::class, 'createSheet']);
     Route::delete('delete-spreadsheet/{spreadsheetId}', [GoogleSheetController::class, 'deleteSpreadsheet']);
     Route::delete('delete-sheet/{spreadsheetId}/{sheetName}', [GoogleSheetController::class, 'deleteSheet']);
+    Route::get('read-sheet/{spreadsheetId}/{sheetName}', [GoogleSheetController::class, 'readSheet']);
     Route::post('insert-data/{spreadsheetId}/{sheetName}', [GoogleSheetController::class, 'insertData']);
     Route::post('append-data/{spreadsheetId}/{sheetName}', [GoogleSheetController::class, 'appendData']);
-    Route::get('read-sheet/{spreadsheetId}/{sheetName}', [GoogleSheetController::class, 'readSheet']);
     Route::get('list-spreadsheets', [GoogleSheetController::class, 'listSpreadsheets']);
     Route::get('list-sheets/{spreadsheetId}', [GoogleSheetController::class, 'listSheets']);
     Route::get('sheet-exists/{spreadsheetId}/{sheetName?}', [GoogleSheetController::class, 'sheetExists']);

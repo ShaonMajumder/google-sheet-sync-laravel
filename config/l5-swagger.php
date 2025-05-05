@@ -50,6 +50,23 @@ return [
         ],
     ],
     'defaults' => [
+        'swagger' => [
+            'info' => [
+                'title' => 'Google Sheet Sync Laravel API',
+                'version' => '1.2.0',
+                'description' => 'A Laravel-based API to synchronize data with Google Sheets. This API allows authentication using OAuth 2.0 and supports reading, writing, appending, and managing Google Spreadsheet data.',
+                'contact' => [
+                    'email' => 'smazoomder@gmail.com',
+                ],
+            ],
+            'securitySchemes' => [
+                'api_key' => [
+                    'type' => 'apiKey',
+                    'in' => 'header',
+                    'name' => 'X-API-KEY',
+                ],
+            ],
+        ],
         'routes' => [
             /*
              * Route for accessing parsed swagger annotations.

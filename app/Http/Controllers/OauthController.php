@@ -10,24 +10,6 @@ use Google\Client;
 use Google\Service\Sheets;
 use Illuminate\Support\Facades\Redis;
 
-/**
- * @OA\Info(
- *     title="Google Sheet Sync Laravel API",
- *     version="1.2.0",
- *     description="A Laravel-based API to synchronize data with Google Sheets. This API allows authentication using OAuth 2.0 and supports reading, writing, appending, and managing Google Spreadsheet data.",
- *     @OA\Contact(
- *         email="smazoomder@gmail.com"
- *     )
- * )
- * 
- * @OA\SecurityScheme(
- *     securityScheme="api_key",
- *     type="apiKey",
- *     in="header",
- *     name="X-API-KEY"
- * )
- * 
- */
 class OauthController extends Controller
 {
     private $redisKey;

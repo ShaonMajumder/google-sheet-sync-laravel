@@ -166,6 +166,7 @@ class GoogleSheetHelper
 
             $response = $this->service->spreadsheets->create($spreadsheet, ['fields' => 'spreadsheetId']);
             $spreadsheetId = $response->spreadsheetId;
+            $this->setSpreadsheetId($spreadsheetId);
 
             Log::info("Created new spreadsheet with ID: $spreadsheetId");
 
@@ -174,7 +175,7 @@ class GoogleSheetHelper
             }
 
             if ($data) {
-                $this->appendRowToSheet($spreadsheetId, $sheetName, $data);
+                $this->insertData($sheetName, $data);
             }
 
             return $spreadsheetId;
@@ -184,7 +185,7 @@ class GoogleSheetHelper
         }
     }
 
-    public function createSheet($sheetName)
+    public function createSheet($sheetName, $data = null)
     {
         try {
             $this->initializeService();
@@ -202,6 +203,11 @@ class GoogleSheetHelper
 
             $sheetId = $response->replies[0]['addSheet']['properties']['sheetId'];
             Log::info("Sheet '$sheetName' created with ID: $sheetId\n");
+
+            if ($data) {
+                $this->insertData($sheetName, $data);
+            }
+            
             return $sheetId;
         } catch (Exception $e) {
             Log::error('An error occurred: ' . $e->getMessage());
