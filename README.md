@@ -4,12 +4,6 @@
 
 A Laravel-based project to interact with Google Sheets API, allowing users to create, read, update, and append data to Google Sheets directly from a Laravel application.
 
-## Project Details
-
--   **Backend Language**: PHP 7.4
--   **Framework**: Laravel Framework 8.83.29
--   **Purpose**: Synchronize data between your Laravel application and Google Sheets using Google Sheets API.
-
 ## Features
 
 -   Create new Google Spreadsheets.
@@ -23,6 +17,12 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   OAuth 2.0
 -   Redis
 -   Swagger API Documentation
+
+## Project Details
+
+-   **Backend Language**: PHP 7.4
+-   **Framework**: Laravel Framework 8.83.29
+-   **Purpose**: Synchronize data between your Laravel application and Google Sheets using Google Sheets API.
 
 ## Prerequisites
 
