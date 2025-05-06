@@ -230,6 +230,7 @@ $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
 filters Dashboard to isolate errors (e.g., status >= 400).
 Dashboard panel for error spikes (like 500s).
 Alert rule in Kibana for unusual spikes in 500/400 errors.
+http://localhost:5601/
 
 ## Log Handling
 
