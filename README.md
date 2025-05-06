@@ -4,13 +4,20 @@
 
 A Laravel-based project to interact with Google Sheets API, allowing users to create, read, update, and append data to Google Sheets directly from a Laravel application.
 
-## Features
+## 🚀 Features
 
--   Create new Google Spreadsheets.
--   Add new sheets to existing spreadsheets.
--   Insert data into specific sheets.
--   Read data from Google Sheets.
--   Append rows to Google Sheets.
+-   📄 Create new Google Spreadsheets.
+-   ➕ Add new sheets to existing spreadsheets.
+-   🗑️ Delete entire spreadsheets or specific sheets.
+-   📥 Insert or append data to specific sheets.
+-   📤 Read data from Google Sheets.
+-   🔍 Find a specific value in a sheet.
+-   📋 List all spreadsheets and their sheets.
+-   🧾 Check if a sheet exists.
+-   📊 Get metadata of sheets.
+-   🔐 Revoke Google OAuth access token.
+
+🧹 Clear contents of a sheet without deleting it.
 
 # Competitive Advantages
 
