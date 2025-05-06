@@ -12,6 +12,13 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   Read data from Google Sheets.
 -   Append rows to Google Sheets.
 
+# Competitive Advantages
+
+-   **Scalable** - to million users. Future - loadtest with Jmeter
+-   **Secure** - API Key & Ouath 2.0, Future - JWT
+-   **Monitoring, Observilibity, Threshold Alert**
+-   **Faster api GRPC** - Future
+
 ## Knowledge
 
 -   Google Sheets API
