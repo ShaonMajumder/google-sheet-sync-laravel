@@ -14,9 +14,37 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 
 ## Knowledge
 
+-   Google Sheets API
+-   Docker
 -   OAuth 2.0
 -   Redis
--   Swagger API Documentation
+-   Swagger
+
+## Future
+
+-   ELK stack
+-   GraphQL, GRPC apis
+-   Monitoring & Observibility tools
+-   CI/CD Pipelines
+-   git webhook
+
+# API Security
+
+-   Rate Limiting
+
+# Scalibity
+
+-   Rate Limiting
+
+# API Best Practices
+
+-   Inter API Communication
+-   API Security
+-   API Integration
+-   Versioned APIs
+-   API Documentation
+-   Semantic versioning and changelog
+-   Rate Limiting
 
 ## Project Details
 

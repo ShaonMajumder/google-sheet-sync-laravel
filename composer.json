@@ -14,7 +14,7 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "shaonmajumder/caching": "dev-main",
-        "shaonmajumder/microservice-utility": "dev-master"
+        "shaonmajumder/microservice-utility": "^1.2"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

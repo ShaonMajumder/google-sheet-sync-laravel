@@ -13,11 +13,6 @@ class SetupController extends Controller
         return view('setup');
     }
 
-    public function apiGuide()
-    {
-        return view('api_guide');
-    }
-
     public function store(Request $request)
     {
         $request->validate([

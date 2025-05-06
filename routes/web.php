@@ -31,4 +31,3 @@ Route::prefix('sheet')->group(function () {
 
 Route::get('/setup', [SetupController::class, 'show'])->name('setup.show');
 Route::post('/setup', [SetupController::class, 'store'])->name('setup.credentials');
-Route::get('/api-guide', [SetupController::class, 'apiGuide'])->name('api.guide');
