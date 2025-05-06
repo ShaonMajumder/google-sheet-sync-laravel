@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use ShaonMajumder\Facades\CacheHelper;
 use App\Helpers\GoogleSheetHelper;
+use App\Helpers\LogstashAttributeHelper;
 use Illuminate\Http\Request;
 use Exception;
 use Google\Client;
@@ -167,13 +168,14 @@ class GoogleSheetController extends Controller
             $googleSheets = new GoogleSheetHelper();
             $spreadsheetId = $googleSheets->createSpreadsheet($title, $data);
 
-            Log::channel('elasticsearch')->info('Spreadsheet created successfully', [
-                'status' => true,
-                'httpStatusCode' => 200,
-                'message' => 'Spreadsheet created successfully',
-                'spreadsheetId' => $spreadsheetId,
-                'link' => "https://docs.google.com/spreadsheets/d/$spreadsheetId",
-                'requestIp' => $request->ip()
+            LogstashAttributeHelper::setAttributes($request, [
+                'logMessage' => 'Spreadsheet created successfully',
+                'logContext' => [
+                    'status' => true,
+                    'message' => 'Spreadsheet created successfully',
+                    'spreadsheetId' => $spreadsheetId,
+                    'link' => "https://docs.google.com/spreadsheets/d/$spreadsheetId"
+                ]
             ]);
 
             return response()->json([
@@ -182,23 +184,25 @@ class GoogleSheetController extends Controller
                 'link' => "https://docs.google.com/spreadsheets/d/$spreadsheetId"
             ]);
         } catch (Exception $e) {
-            Log::channel('elasticsearch')->info('Spreadsheet can not be created', [
-                'status' => false,
-                'httpStatusCode' => 500,
-                'message' => 'Spreadsheet can not be created',
-                'error' => $e->getMessage(),
-                'errorCode' => $e->getCode(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
-                'request' => $request->all(),
-                'requestMethod' => $request->method(),
-                'requestUrl' => $request->url(),
-                'requestIp' => $request->ip(),
-                'requestUserAgent' => $request->userAgent(),
-                'requestHeaders' => $request->headers->all(),
-                'requestCookies' => $request->cookies->all(),
-                'requestSession' => $request->session()->all(),
+            LogstashAttributeHelper::setAttributes($request, [
+                'logMessage' => 'Spreadsheet can not be created',
+                'logContext' => [
+                    'status' => false,
+                    'message' => 'Spreadsheet can not be created',
+                    'error' => $e->getMessage(),
+                    'errorCode' => $e->getCode(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                    // 'request' => $request->all(),
+                    // 'requestMethod' => $request->method(),
+                    // 'requestUrl' => $request->url(),
+                    // 'requestIp' => $request->ip(),
+                    // 'requestUserAgent' => $request->userAgent(),
+                    // 'requestHeaders' => $request->headers->all(),
+                    // 'requestCookies' => $request->cookies->all(),
+                    // 'requestSession' => $request->session()->all(),
+                ]
             ]);
 
             return response()->json([

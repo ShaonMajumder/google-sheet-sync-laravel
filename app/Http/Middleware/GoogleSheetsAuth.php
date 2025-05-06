@@ -27,7 +27,7 @@ class GoogleSheetsAuth
         $hostWithPort = route('home');
         $tokenData = CacheHelper::getCache($this->redisKey);
         if (!$tokenData) {
-            Log::channel('elasticsearch')->info('Access Denied.', [
+            Log::channel('elasticsearch')->error('Access Denied.', [
                 'status' => false,
                 'httpStatusCode' => 403,
                 'error' => "To get access visit $hostWithPort to in browser.",

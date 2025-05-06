@@ -21,13 +21,13 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   Swagger
 -   Elasticsearch
 -   Kibana
--   Logstash
+-   Logstash - Adding Response Time
 
 ## Future
 
 -   Prometheus + Grafana
 -   GraphQL, GRPC apis
--   Monitoring & Observibility tools
+-   Monitoring & Observibility tools - Adding Response Time
 -   CI/CD Pipelines
 -   git webhook
 
@@ -237,6 +237,34 @@ http://localhost:5601/
 # UnitTest
 
 ## Log Handling
+
+-   Adding Response Time
+-   general logging -
+
+```php
+Log::channel('elasticsearch')->error('Access Denied.', [
+                'status' => false,
+                'httpStatusCode' => 403,
+                'error' => "To get access visit $hostWithPort to in browser.",
+                'request' => $request->all(),
+                'requestMethod' => $request->method(),
+                'requestUrl' => $request->url(),
+                'requestIp' => $request->ip(),
+                'requestUserAgent' => $request->userAgent()
+            ]);
+
+// or,
+// for automatic api response time
+LogstashAttributeHelper::setAttributes($request, [
+                'logMessage' => 'Spreadsheet created successfully',
+                'logContext' => [
+                    'status' => true,
+                    'message' => 'Spreadsheet created successfully',
+                    'spreadsheetId' => $spreadsheetId,
+                    'link' => "https://docs.google.com/spreadsheets/d/$spreadsheetId"
+                ]
+            ]);
+```
 
 To see logstash works
 
