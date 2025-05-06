@@ -3,6 +3,7 @@
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
+use Elasticsearch\ClientBuilder;
 
 return [
 
@@ -113,6 +114,12 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        
+        'elasticsearch' => [
+            'driver' => 'custom',
+            'via' => \App\Logging\CustomLogger::class,  // We'll define this custom logger class next
+        ],
+
     ],
 
 ];

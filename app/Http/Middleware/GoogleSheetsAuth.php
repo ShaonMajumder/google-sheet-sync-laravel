@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use ShaonMajumder\Facades\CacheHelper;
+use Illuminate\Support\Facades\Log;
 
 class GoogleSheetsAuth
 {
@@ -26,6 +27,17 @@ class GoogleSheetsAuth
         $hostWithPort = route('home');
         $tokenData = CacheHelper::getCache($this->redisKey);
         if (!$tokenData) {
+            Log::channel('elasticsearch')->info('Access Denied.', [
+                'status' => false,
+                'httpStatusCode' => 403,
+                'error' => "To get access visit $hostWithPort to in browser.",
+                'request' => $request->all(),
+                'requestMethod' => $request->method(),
+                'requestUrl' => $request->url(),
+                'requestIp' => $request->ip(),
+                'requestUserAgent' => $request->userAgent()
+            ]);
+
             return response()->json([
                 'status' => false,
                 'error' => "To get access visit $hostWithPort to in browser."

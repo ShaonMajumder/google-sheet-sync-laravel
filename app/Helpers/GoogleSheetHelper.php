@@ -202,7 +202,7 @@ class GoogleSheetHelper
             $response = $this->service->spreadsheets->batchUpdate($spreadsheetId, $body);
 
             $sheetId = $response->replies[0]['addSheet']['properties']['sheetId'];
-            Log::info("Sheet '$sheetName' created with ID: $sheetId\n");
+            Log::channel('elasticsearch')->info("Sheet '$sheetName' created with ID: $sheetId\n");
 
             if ($data) {
                 $this->insertData($sheetName, $data);

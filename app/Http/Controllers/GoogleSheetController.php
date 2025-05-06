@@ -167,12 +167,40 @@ class GoogleSheetController extends Controller
             $googleSheets = new GoogleSheetHelper();
             $spreadsheetId = $googleSheets->createSpreadsheet($title, $data);
 
+            Log::channel('elasticsearch')->info('Spreadsheet created successfully', [
+                'status' => true,
+                'httpStatusCode' => 200,
+                'message' => 'Spreadsheet created successfully',
+                'spreadsheetId' => $spreadsheetId,
+                'link' => "https://docs.google.com/spreadsheets/d/$spreadsheetId",
+                'requestIp' => $request->ip()
+            ]);
+
             return response()->json([
                 'message' => 'Spreadsheet created successfully',
                 'spreadsheetId' => $spreadsheetId,
                 'link' => "https://docs.google.com/spreadsheets/d/$spreadsheetId"
             ]);
         } catch (Exception $e) {
+            Log::channel('elasticsearch')->info('Spreadsheet can not be created', [
+                'status' => false,
+                'httpStatusCode' => 500,
+                'message' => 'Spreadsheet can not be created',
+                'error' => $e->getMessage(),
+                'errorCode' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+                'requestMethod' => $request->method(),
+                'requestUrl' => $request->url(),
+                'requestIp' => $request->ip(),
+                'requestUserAgent' => $request->userAgent(),
+                'requestHeaders' => $request->headers->all(),
+                'requestCookies' => $request->cookies->all(),
+                'requestSession' => $request->session()->all(),
+            ]);
+
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage()
             ], 500);

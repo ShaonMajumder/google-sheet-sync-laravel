@@ -19,10 +19,13 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   OAuth 2.0
 -   Redis
 -   Swagger
+-   Elasticsearch
+-   Kibana
+-   Logstash
 
 ## Future
 
--   ELK stack
+-   Prometheus + Grafana
 -   GraphQL, GRPC apis
 -   Monitoring & Observibility tools
 -   CI/CD Pipelines
@@ -45,6 +48,10 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   API Documentation
 -   Semantic versioning and changelog
 -   Rate Limiting
+
+# Liked Features
+
+-   Health Check of API
 
 ## Project Details
 
@@ -216,6 +223,30 @@ $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
 
 
 // $client->setRedirectUri('http://localhost:8000/sheet/oauth/callback');
+```
+
+# Visualization
+
+filters Dashboard to isolate errors (e.g., status >= 400).
+Dashboard panel for error spikes (like 500s).
+Alert rule in Kibana for unusual spikes in 500/400 errors.
+
+## Log Handling
+
+To see logstash works
+
+http://localhost:5601/app/dev_tools#/console
+GET /googlesheet-api-index-\*/\_search
+{
+"query": {
+"match_all": {}
+}
+}
+
+Log delete -
+
+```bash
+curl -X DELETE "http://localhost:9200/googlesheet-api-index-2025-05-06"
 ```
 
 ## Troubleshooting
