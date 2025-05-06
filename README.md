@@ -16,8 +16,7 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   🧾 Check if a sheet exists.
 -   📊 Get metadata of sheets.
 -   🔐 Revoke Google OAuth access token.
-
-🧹 Clear contents of a sheet without deleting it.
+-   🧹 Clear contents of a sheet without deleting it.
 
 # Competitive Advantages
 
