@@ -35,7 +35,6 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 
 -   Prometheus + Grafana
 -   GraphQL, GRPC apis
--   Monitoring & Observibility tools - Adding Response Time
 -   CI/CD Pipelines
 -   git webhook
 
