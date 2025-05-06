@@ -15,7 +15,7 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 # Competitive Advantages
 
 -   **Scalable** - to million users. Future - loadtest with Jmeter
--   **Secure** - API Key & Ouath 2.0, Future - JWT
+-   **Secure** - API Key & Ouath 2.0, Rate Limiting, Future - JWT
 -   **Monitoring, Observilibity, Threshold Alert** - ELK Stack
 -   **Faster API** - Future - GRPC for inner microservices to communicate and use it as service
 -   **CI/CD** - Future - Github Actions and Jenkins
@@ -38,14 +38,6 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   Monitoring & Observibility tools - Adding Response Time
 -   CI/CD Pipelines
 -   git webhook
-
-# API Security
-
--   Rate Limiting
-
-# Scalibity
-
--   Rate Limiting
 
 # API Best Practices
 
