@@ -105,17 +105,55 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 
 ## Usage
 
-### Step 2: Synchronization
+After launching show api manual
+for breif here is the api routes
 
-Use the following route to interact with Google Sheets:
+## API Routes
 
--   **Sync Route**:
+Below is the list of available API routes for Google Sheet Sync:
 
-    ```
-    http://localhost/sheet
-    ```
+-   `GET /access-revoke`  
+    Revoke the access token.  
+    `Route Name`: `revoke.access`
 
-    This route will trigger the `GoogleSheetController` to sync data with Google Sheets.
+-   `POST /create-spreadsheet`  
+    Create a new Google Spreadsheet.
+
+-   `POST /create-sheet/{spreadsheetId}/{sheetName}`  
+    Create a new sheet in the specified spreadsheet.
+
+-   `DELETE /delete-spreadsheet/{spreadsheetId}`  
+    Delete the specified Google Spreadsheet.
+
+-   `DELETE /delete-sheet/{spreadsheetId}/{sheetName}`  
+    Delete the specified sheet from the spreadsheet.
+
+-   `GET /read-sheet/{spreadsheetId}/{sheetName}`  
+    Read the data from the specified sheet in the spreadsheet.
+
+-   `POST /insert-data/{spreadsheetId}/{sheetName}`  
+    Insert data into the specified sheet of the spreadsheet.
+
+-   `POST /append-data/{spreadsheetId}/{sheetName}`  
+    Append data to the specified sheet of the spreadsheet.
+
+-   `GET /list-spreadsheets`  
+    List all available Google Spreadsheets.
+
+-   `GET /list-sheets/{spreadsheetId}`  
+    List all sheets within the specified spreadsheet.
+
+-   `GET /sheet-exists/{spreadsheetId}/{sheetName?}`  
+    Check if the specified sheet exists in the spreadsheet.
+
+-   `POST /find-value/{spreadsheetId}/{sheetName}`  
+    Find a value in the specified sheet of the spreadsheet.
+
+-   `GET /get-sheet-metadata/{spreadsheetId}/{sheetName?}`  
+    Retrieve metadata for the specified sheet in the spreadsheet.
+
+-   `GET /clear-sheet/{spreadsheetId}/{sheetName?}`  
+    Clear the data of the specified sheet in the spreadsheet.
 
 ## Key Classes
 
