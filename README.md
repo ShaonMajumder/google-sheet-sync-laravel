@@ -50,7 +50,7 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   Health Check of API
 -   logstash centralized - api response time
 
-# API Best Practices Here
+## API Best Practices Here
 
 -   Inter API Communication
 -   API Security
@@ -93,11 +93,7 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
     docker-compose up --build
     ```
 
-3. Update the following values in `.env`:
-
-    ```
-    CREDENTIALS_FILE=/path/to/your/credentials.json
-    ```
+3. After application launch follow the setup guide at - http://localhost:8000/
 
 ### 🔐 Google OAuth Setup for Laravel Google Sheet Sync
 
