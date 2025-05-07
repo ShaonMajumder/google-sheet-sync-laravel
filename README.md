@@ -22,6 +22,7 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 
 -   **Scalable** - to million users. Future - loadtest with Jmeter
 -   **Secure** - API Key & Ouath 2.0, Rate Limiting, Future - JWT
+-   **Efficient Token Management** - Tokens are stored in Redis, allowing for fast retrieval and improving API request performance. This leads to faster user interactions with minimal latency, enhancing overall system efficiency.
 -   **Monitoring, Observilibity, Threshold Alert** - ELK Stack
 -   **Faster API** - Future - GRPC for inner microservices to communicate and use it as service
 -   **CI/CD** - Future - Github Actions and Jenkins
