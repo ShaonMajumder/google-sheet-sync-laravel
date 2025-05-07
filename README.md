@@ -194,7 +194,7 @@ $newRow = ['Bob', '25', 'Los Angeles'];
 $googleSheetHelper->appendRow($newRow, 'Sample Sheet');
 ```
 
-## Development Samples
+## Auth Response
 
 ```json
 $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
