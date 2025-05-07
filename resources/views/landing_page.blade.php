@@ -25,6 +25,9 @@
                 <a href="{{ $route }}" class="inline-block {{ $buttonClass }} text-white font-bold py-2 px-6 rounded-lg">
                     {{ $buttonText }}
                 </a>
+                <a href="{{ url('api/documentation') }}" target="_blank" class="inline-block bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg">
+                    Use API Right Now
+                </a>
             @endif
         </div>
 
