@@ -46,7 +46,7 @@
             <ol class="list-decimal list-inside text-gray-700 space-y-1 text-left">
                 <li>Set up your Google Cloud project and enable Sheets + Drive APIs.  Navigate to <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="text-blue-600 underline">APIs & Services → Credentials</a></li>
                 <li>Download <code>credentials.json</code></li>
-                <li>Upload in <a href="{{ route('setup.show') }}" target="_blank" class="text-blue-600 underline">Setup page</a></li>
+                <li>Upload in <a href="{{ route('setup.show') }}" target="_blank" class="text-blue-600 underline">Setup page</a> or <a href="{{ route('setup.credentials.manual') }}" target="_blank" class="text-blue-600 underline">Follow Manual Guide</a></li>
                 <li><a href="{{ route('get.access') }}" class="text-blue-600 underline">Get Access</a></li>
                 <li>Get the api key</li>
                 <li>Use <a href="{{ url('api/documentation') }}" target="_blank" class="text-blue-600 underline">Api Guide</a></li>

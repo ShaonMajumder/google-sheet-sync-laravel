@@ -95,46 +95,6 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 
 3. After application launch follow the setup guide at - http://localhost:8000/
 
-### 🔐 Google OAuth Setup for Laravel Google Sheet Sync
-
-1. **Go to Google Cloud Console**  
-   Open: [Google Cloud Console](https://console.cloud.google.com/)
-
-2. **Navigate to APIs & Services → Credentials**  
-   [Credentials Page](https://console.cloud.google.com/apis/credentials)
-
-3. **Download OAuth 2.0 Credentials JSON**
-
-    - Locate your existing OAuth 2.0 credential under **"OAuth 2.0 Client IDs"**
-    - Find the one named, for example: `Web client 1 Laravel Google Sheet Sync`
-    - Click the **download icon** beside it
-    - Save the file in your local Laravel project:  
-      `E:\Projects\google-sheet-sync-laravel\storage\client_secret_xxxxx.json`
-
-4. **Copy the credentials file into the Docker container**
-
-    ```bash
-    docker cp "E:\Projects\google-sheet-sync-laravel\storage\client_secret_xxxxx.json" googlesheet-laravel-app:/var/www/html/storage/
-    ```
-
-5. **Update `.env`**
-
-    ```env
-    CREDENTIALS_FILE=../storage/client_secret_xxxxx.json
-    ```
-
-6. **Copy updated `.env` into Docker container**
-
-    ```bash
-    docker cp .env googlesheet-laravel-app:/var/www/html/.env
-    ```
-
-7. **Clear Laravel config cache inside the container**
-
-    ```bash
-    docker compose exec app php artisan config:clear
-    ```
-
 ## Development
 
 -   update api documentaion :

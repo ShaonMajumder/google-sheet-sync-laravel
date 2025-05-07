@@ -13,6 +13,11 @@ class SetupController extends Controller
         return view('setup');
     }
 
+    public function showManual()
+    {
+        return view('setup-manual');
+    }
+
     public function store(Request $request)
     {
         $request->validate([

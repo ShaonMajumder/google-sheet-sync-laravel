@@ -32,6 +32,7 @@ Route::prefix('sheet')->group(function () {
 });
 
 Route::get('/setup', [SetupController::class, 'show'])->name('setup.show');
+Route::get('/setup/credential-setup-manual', [SetupController::class, 'showManual'])->name('setup.credentials.manual');
 Route::post('/setup', [SetupController::class, 'store'])->name('setup.credentials');
 
 Route::prefix('elasticsearch')->group(function () {
