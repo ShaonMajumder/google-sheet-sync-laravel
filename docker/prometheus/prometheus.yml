@@ -4,4 +4,4 @@ global:
 scrape_configs:
   - job_name: "laravel_app"
     static_configs:
-      - targets: ["app:80"]
+      - targets: ["localhost:9090"]

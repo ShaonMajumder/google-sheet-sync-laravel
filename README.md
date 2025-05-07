@@ -263,11 +263,35 @@ GET /googlesheet-api-index-\*/\_search
 }
 }
 
-Log delete -
+## Metrics
 
-```bash
-curl -X DELETE "http://localhost:9200/googlesheet-api-index-2025-05-06"
-```
+### Data Source
+
+Add Prometheus as Data Source in Grafana
+Before adding visualizations, ensure Prometheus is correctly set as a data source in Grafana:
+
+Open Grafana in your browser at http://localhost:3000/ (default username is admin and the password is admin unless you've changed them).
+
+Go to the Settings (gear icon) on the left sidebar.
+
+Click on Data Sources.
+
+Click Add data source and choose Prometheus from the list.
+
+In the URL field, enter the URL for Prometheus, which is http://localhost:9090.
+
+Click Save & Test to ensure Grafana can successfully communicate with Prometheus.
+
+Go to http://localhost:3000/drilldown
+Select Metrics
+
+In Grafana edit page :
+http://localhost:3000/connections/datasources/edit/eel5fg1qrcpogb
+set Prometheus server URL - http://prometheus:9090 (containername and port)
+Successfully queried the Prometheus API.
+Next, you can start to visualize data by building a dashboard,
+http://localhost:3000/dashboard/new?orgId=1&from=now-6h&to=now&timezone=browser
+Add Visualization
 
 # Visualization
 

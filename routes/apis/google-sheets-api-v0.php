@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware(['microservice-utility.api.key','google.sheets.auth','throttle:google-sheets-api','logstash.log'])->name('google-sheets.')->group(function () {
+Route::middleware(['microservice-utility.api.key','google.sheets.auth','logstash.log','throttle:google-sheets-api'])->name('google-sheets.')->group(function () {
     Route::get('access-revoke', [OauthController::class, 'revokeAccessToken'])->name('revoke.access');
     Route::post('create-spreadsheet', [GoogleSheetController::class, 'createSpreadsheet']);
     Route::post('create-sheet/{spreadsheetId}/{sheetName}', [GoogleSheetController::class, 'createSheet']);

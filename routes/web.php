@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ElasticsearchController;
 use App\Http\Controllers\GoogleSheetController;
 use App\Http\Controllers\OauthController;
@@ -45,3 +46,7 @@ Route::get('/metrics', function (MetricsService $metricsService) {
     return response($metricsService->expose(), 200)
         ->header('Content-Type', 'text/plain');
 });
+
+
+Route::post('/admin/env-update', [AdminController::class, 'clearConfig'])
+    ->name('admin.env.update');

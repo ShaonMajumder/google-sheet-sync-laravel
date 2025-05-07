@@ -3,6 +3,41 @@
 @section('title', 'Google Sheet Sync')
 
 @section('content')
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('clear-cache-form');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            let formData = new FormData(form);
+            let button = document.getElementById('submit-btn');
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest', // Ensures AJAX request
+                    'Accept': 'application/json',  // Expect JSON response
+                },
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    toastr.success(data.message, 'Success');
+                } else {
+                    toastr.error(data.message, 'Error');
+                }
+                // button.disabled = false;
+            })
+            .catch(error => {
+                toastr.error('An error occurred. Please try again.', 'Error');
+                // button.disabled = false;
+            });
+        });
+    });
+</script>
+
     @php
         $route = empty($tokenData) ? route('get.access') : route('revoke.access');
         $buttonClass = empty($tokenData) ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600';
@@ -29,6 +64,37 @@
                     Use API Right Now
                 </a>
             @endif
+        </div>
+
+        <!-- Developer Console -->
+        <div class="bg-white shadow-md rounded-lg p-6 mt-6">
+            <h2 class="text-2xl font-semibold mb-3">🛠️ Developer Console</h2>
+            <p class="text-gray-700 mb-2">Admin and Developer specific tools to maintain and debug the app.</p>
+
+            <!-- Refresh Environment Section -->
+            <div class="bg-white shadow-md rounded-lg p-6 mt-6">
+                <h2 class="text-2xl font-semibold mb-3">🔄 Refresh Environment</h2>
+                <p class="text-gray-700 mb-2">
+                    If you have updated the <code>.env</code> file, use the button below to clear the config cache.
+                </p>
+
+                <form id="clear-cache-form" method="POST" action="{{ route('admin.env.update') }}">
+                    @csrf
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg">
+                        Clear Config Cache
+                    </button>
+                </form>
+
+                <!-- Toaster Notification Script -->
+                <div id="toast-container" class="fixed top-0 right-0 p-4 z-50 hidden"></div>
+
+
+                @if (session('status'))
+                    <div class="mt-3 text-green-600 font-medium">
+                        {{ session('status') }}
+                    </div>
+                @endif
+            </div>
         </div>
 
         <div class="bg-white shadow-md rounded-lg p-6">
@@ -79,4 +145,32 @@
             </div>
         </div>
     </div>
+
+    
 @endsection
+
+@push('scripts')
+
+
+<script>
+    window.onload = function () {
+        toastr.options = {
+            "closeButton": true,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+    };
+</script>
+
+@endpush
