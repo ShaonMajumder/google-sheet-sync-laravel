@@ -105,20 +105,6 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 
 ## Usage
 
-### Step 1: Authentication
-
-1. Visit the route to initiate the OAuth flow:
-
-    ```
-    http://localhost/oauth
-    ```
-
-2. Authenticate with Google and obtain the authorization code.
-
-3. Paste the authorization code into the required field or endpoint (e.g., `/oauth/callback`).
-
-4. The application will save the token in Redis for future API requests.
-
 ### Step 2: Synchronization
 
 Use the following route to interact with Google Sheets:
