@@ -106,7 +106,7 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 ## Usage
 
 After launching see api manual at - http://localhost:8000/api/documentation
-for breif here is the api routes
+and for brief here is the api routes :
 
 ### API Routes
 
