@@ -69,14 +69,13 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 
 ## 📸 Screenshots
 
-<div style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding: 10px; gap: 10px;">
-
-  <img src="screenshots/landing-page.png" width="300" style="scroll-snap-align: start;"/>
-  <img src="screenshots/ouath-2.0-1.png" width="300" style="scroll-snap-align: start;"/>
-  <img src="screenshots/ouath-2.0-2.png" width="300" style="scroll-snap-align: start;"/>
-  <img src="screenshots/ouath-2.0-3.png" width="300" style="scroll-snap-align: start;"/>
-
-</div>
+<details>
+  <summary>Images: Click to expand</summary>
+  <img src="screenshots/landing-page.png" alt="Landing Page" width="300"/>
+  <img src="screenshots/ouath-2.0-1.png" alt="OAuth 2.0 Image 1" width="300"/>
+  <img src="screenshots/ouath-2.0-2.png" alt="OAuth 2.0 Image 2" width="300"/>
+  <img src="screenshots/ouath-2.0-3.png" alt="OAuth 2.0 Image 3" width="300"/>
+</details>
 
 ## Prerequisites
 
