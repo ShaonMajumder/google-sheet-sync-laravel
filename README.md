@@ -69,12 +69,12 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 
 ## 📸 Screenshots
 
-<div style="display: flex; overflow-x: auto; gap: 10px; padding: 10px;">
+<div style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding: 10px; gap: 10px;">
 
-  <img src="screenshots/landing-page.png" width="300" />
-  <img src="screenshots/ouath-2.0-1.png" width="300" />
-  <img src="screenshots/ouath-2.0-2.png" width="300" />
-  <img src="screenshots/ouath-2.0-3.png" width="300" />
+  <img src="landing-page.png" width="300" style="scroll-snap-align: start;"/>
+  <img src="ouath-2.0-1.png" width="300" style="scroll-snap-align: start;"/>
+  <img src="ouath-2.0-2.png" width="300" style="scroll-snap-align: start;"/>
+  <img src="ouath-2.0-3.png" width="300" style="scroll-snap-align: start;"/>
 
 </div>
 
