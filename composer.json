@@ -14,6 +14,7 @@
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
+        "promphp/prometheus_client_php": "^2.14",
         "shaonmajumder/caching": "dev-main",
         "shaonmajumder/microservice-utility": "^1.2"
     },

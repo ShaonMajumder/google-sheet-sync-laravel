@@ -178,6 +178,16 @@ class GoogleSheetController extends Controller
                 ]
             ]);
 
+            // Log::channel('elasticsearch')->info( 'Spreadsheet created successfully', [
+            //     'logMessage' => 'Spreadsheet created successfully',
+            //     'logContext' => [
+            //         'status' => true,
+            //         'message' => 'Spreadsheet created successfully',
+            //         'spreadsheetId' => $spreadsheetId,
+            //         'link' => "https://docs.google.com/spreadsheets/d/$spreadsheetId"
+            //     ]
+            // ]);
+
             return response()->json([
                 'message' => 'Spreadsheet created successfully',
                 'spreadsheetId' => $spreadsheetId,

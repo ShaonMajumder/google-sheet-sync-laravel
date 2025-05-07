@@ -13,6 +13,9 @@
         <p class="text-lg text-gray-600 mt-2">Easily sync your data with Google Sheets.</p>
 
         @yield('content')
+        <footer class="text-center text-sm text-gray-400 mt-8">
+            &copy; 2024-{{ date('Y') }} Google Sheet Sync Laravel by Shaon Majumder
+        </footer>
     </div>
 </body>
 </html>

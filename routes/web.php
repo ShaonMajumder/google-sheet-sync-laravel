@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\ElasticsearchController;
 use App\Http\Controllers\GoogleSheetController;
 use App\Http\Controllers\OauthController;
 use App\Http\Controllers\SetupController;
+use App\Services\MetricsService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -31,3 +33,14 @@ Route::prefix('sheet')->group(function () {
 
 Route::get('/setup', [SetupController::class, 'show'])->name('setup.show');
 Route::post('/setup', [SetupController::class, 'store'])->name('setup.credentials');
+
+Route::prefix('elasticsearch')->group(function () {
+    Route::get('/delete-index-form', [ElasticsearchController::class, 'deleteIndexForm'])->name('elasticsearch.delete-index-form');
+    Route::post('/delete-elasticsearch-index/{index}', [ElasticsearchController::class, 'deleteIndex'])->name('delete-elasticsearch-index');
+});
+
+// prometheus metrics
+Route::get('/metrics', function (MetricsService $metricsService) {
+    return response($metricsService->expose(), 200)
+        ->header('Content-Type', 'text/plain');
+});

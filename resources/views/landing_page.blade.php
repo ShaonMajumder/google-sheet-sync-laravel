@@ -53,8 +53,27 @@
             </ol>
         </div>
 
-        <footer class="text-center text-sm text-gray-400 mt-8">
-            &copy; 2024-{{ date('Y') }} Google Sheet Sync Laravel by Shaon Majumder
-        </footer>
+        <!-- Kibana Log Viewing -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-2xl font-semibold mb-3">🔍 Log Viewing</h2>
+            <p class="text-gray-700 mb-2">You can view application logs and monitor them on the Kibana dashboard:</p>
+            <a href="http://localhost:5601/app/discover#/" target="_blank" class="text-blue-600 underline">Go to Kibana Dashboard</a>
+        </div>
+
+        <!-- Elasticsearch Index Deletion -->
+        <div class="bg-white shadow-md rounded-lg p-6 mt-6">
+            <h2 class="text-2xl font-semibold mb-3">⚠️ Elasticsearch Index Deletion</h2>
+            <p class="text-gray-700 mb-2">
+                You can delete the current Elasticsearch index using the form below.
+                <br>
+                <span class="text-red-600 font-semibold">Be cautious as this action is irreversible.</span>
+            </p>
+
+            <div class="text-center mt-4">
+                <a target="_blank" href="{{ route('elasticsearch.delete-index-form') }}" class="inline-block bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg">
+                    Delete Index
+                </a>
+            </div>
+        </div>
     </div>
 @endsection

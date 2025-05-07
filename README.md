@@ -26,25 +26,31 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   **Faster API** - Future - GRPC for inner microservices to communicate and use it as service
 -   **CI/CD** - Future - Github Actions and Jenkins
 
-## Knowledge
+## 📚 Knowledge Stack
 
 -   Google Sheets API
 -   Docker
 -   OAuth 2.0
 -   Redis
 -   Swagger
--   Elasticsearch
--   Kibana
--   Logstash - Adding Response Time
+-   Elasticsearch + Kibana + Logstash - Adding Response Time
+-   Laravel 8.x
+-   PHP 7.4
 
-## Future
+## 🔮 Future Roadmap
 
 -   Prometheus + Grafana
--   GraphQL, GRPC apis
--   CI/CD Pipelines
--   git webhook
+-   GraphQL & gRPC APIs
+-   GIT webhook
+-   CI/CD pipelines
+-   Token-based security with JWT
 
-# API Best Practices
+## Liked Features
+
+-   Health Check of API
+-   logstash centralized - api response time
+
+# API Best Practices Here
 
 -   Inter API Communication
 -   API Security
@@ -53,10 +59,6 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   API Documentation
 -   Semantic versioning and changelog
 -   Rate Limiting
-
-# Liked Features
-
--   Health Check of API
 
 ## Project Details
 
