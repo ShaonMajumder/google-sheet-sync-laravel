@@ -194,7 +194,7 @@ $newRow = ['Bob', '25', 'Los Angeles'];
 $googleSheetHelper->appendRow($newRow, 'Sample Sheet');
 ```
 
-## Auth Response
+### Auth Response
 
 ```json
 $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
@@ -212,18 +212,7 @@ $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
 // $client->setRedirectUri('http://localhost:8000/sheet/oauth/callback');
 ```
 
-# Visualization
-
-filters Dashboard to isolate errors (e.g., status >= 400).
-Dashboard panel for error spikes (like 500s).
-Alert rule in Kibana for unusual spikes in 500/400 errors.
-http://localhost:5601/
-
-# LoadTest
-
-# UnitTest
-
-## Log Handling
+### Log Handling
 
 -   Adding Response Time
 -   general logging -
@@ -268,6 +257,17 @@ Log delete -
 ```bash
 curl -X DELETE "http://localhost:9200/googlesheet-api-index-2025-05-06"
 ```
+
+# Visualization
+
+filters Dashboard to isolate errors (e.g., status >= 400).
+Dashboard panel for error spikes (like 500s).
+Alert rule in Kibana for unusual spikes in 500/400 errors.
+http://localhost:5601/
+
+### LoadTest
+
+### UnitTest
 
 ## Troubleshooting
 
