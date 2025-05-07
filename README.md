@@ -67,6 +67,17 @@ A Laravel-based project to interact with Google Sheets API, allowing users to cr
 -   **Framework**: Laravel Framework 8.83.29
 -   **Purpose**: Synchronize data between your Laravel application and Google Sheets using Google Sheets API.
 
+## 📸 Screenshots
+
+<div style="display: flex; overflow-x: auto; gap: 10px; padding: 10px;">
+
+  <img src="screenshots/landing-page.png" width="300" />
+  <img src="screenshots/ouath-2.0-1.png" width="300" />
+  <img src="screenshots/ouath-2.0-2.png" width="300" />
+  <img src="screenshots/ouath-2.0-3.png" width="300" />
+
+</div>
+
 ## Prerequisites
 
 1. **Google Cloud Project**:
