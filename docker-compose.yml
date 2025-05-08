@@ -135,6 +135,17 @@ services:
     networks:
       - laravel
 
+  elasticsearch_exporter:
+      image: quay.io/prometheuscommunity/elasticsearch-exporter:latest
+      container_name: elasticsearch_exporter
+      command:
+        - '--es.uri=http://elasticsearch:9200'
+      ports:
+        - "9114:9114"
+      depends_on:
+        - elasticsearch
+      networks:
+        - laravel
 volumes:
   dbdata:
   vendor:
