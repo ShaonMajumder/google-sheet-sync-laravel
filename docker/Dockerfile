@@ -42,23 +42,32 @@ RUN [ -d /var/www/html/storage ] && chown -R www-data:www-data /var/www/html/sto
 # 0.484
 # 0.484   git config --global --add safe.directory /var/www/html
 
-# Install PHP dependencies
 # RUN composer install --no-interaction --prefer-dist --optimize-autoloader \
 #     && composer dump-autoload -o \
 #     && php artisan package:discover
-RUN if [ ! -f artisan ]; then \
-    echo "Laravel not found. Creating in temp folder..."; \
-    composer create-project --prefer-dist laravel/laravel /tmp/laravel; \
-    cp -R /tmp/laravel/. .; \
-    rm -rf /tmp/laravel; \
-    fi \
-    && composer install --no-interaction --prefer-dist --optimize-autoloader \
-    && composer dump-autoload -o \
-    && php artisan package:discover
+RUN if [ -f artisan ] && [ -f composer.json ]; then \
+    composer install --no-interaction --prefer-dist --optimize-autoloader && \
+    composer dump-autoload -o && \
+    php artisan package:discover; \
+    else \
+    echo "Laravel not found. Skipping composer install and artisan commands."; \
+    fi
 
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-RUN php artisan key:generate
+
+# RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# RUN php artisan key:generate
+RUN if [ -f artisan ]; then \
+    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
+    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache && \
+    php artisan key:generate; \
+    else \
+    echo "Laravel not found. Skipping permissions and key generation."; \
+    fi
+
+COPY ./docker/startup.sh /usr/local/bin/startup.sh
+RUN chmod +x /usr/local/bin/startup.sh
+ENTRYPOINT ["/usr/local/bin/startup.sh"]
 
 # Expose port 80
 EXPOSE 80
